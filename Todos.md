@@ -8,6 +8,9 @@
 ## Design
 
     - Time series component
+        - Resident view:
+            -
+    - Dashboard page
     - Radial component
 
 ## Front End
