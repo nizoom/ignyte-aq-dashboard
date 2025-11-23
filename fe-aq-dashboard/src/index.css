@@ -3,6 +3,7 @@
   color: #ffecd1;
   background-color: #001524;
   font-family: "Josefin Slab", sans-serif;
+  width: 100%;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -28,8 +29,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -45,4 +44,39 @@ button:hover {
 }
 button:focus,
 button:focus-visible {
+}
+
+/* 1. Base (Mobile/Default) Styles */
+.responsive-title {
+  font-size: 2rem; /* Default for mobile screens (e.g., 32px) */
+  line-height: 1.2;
+  font-weight: 500;
+}
+.responsive-subtitle {
+  font-size: 1.25rem; /* Default for mobile screens (e.g., 20px) */
+  font-weight: 300;
+}
+
+.spacer {
+  height: 200px;
+}
+
+/* 2. Tablet (Medium) Screens: width >= 768px (MD breakpoint) */
+@media (min-width: 768px) {
+  .responsive-title {
+    font-size: 3rem; /* Increase for tablets (e.g., 48px) */
+  }
+  .responsive-subtitle {
+    font-size: 1.5rem; /* Increase for tablets (e.g., 24px) */
+  }
+}
+
+/* 3. Desktop (Large) Screens: width >= 1024px (LG breakpoint) */
+@media (min-width: 1024px) {
+  .responsive-title {
+    font-size: 4rem; /* Further increase for large desktops (e.g., 64px) */
+  }
+  .responsive-subtitle {
+    font-size: 1.75rem; /* Further increase for large desktops (e.g., 28px) */
+  }
 }

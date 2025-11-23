@@ -40,3 +40,35 @@
 .read-the-docs {
   color: #888;
 }
+
+.button {
+  width: 150px;
+  border-radius: 24px;
+  font-family: "Josefin Sans";
+  background-color: #001524;
+  color: #ffecd1;
+  border-color: #ffecd1;
+  border-width: 2px;
+}
+.button-sml {
+  width: 100px;
+  border-radius: 24px;
+  font-family: "Josefin Sans";
+  background-color: #001524;
+  color: #ffecd1;
+  border-color: #ffecd1;
+  border-width: 2px;
+}
+
+.button:hover,
+.button-sml:hover {
+  background-color: #ff7d00;
+  border-color: #ff7d00;
+  color: #001524;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 125, 0, 0.4);
+}
+
+.text-sans {
+  font-family: "Josefin Sans";
+}
