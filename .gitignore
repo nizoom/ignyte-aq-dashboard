@@ -1,1 +1,5 @@
 fe-aq-dashboard/ .env
+.env
+.env.local
+.env*.local
+*.env
