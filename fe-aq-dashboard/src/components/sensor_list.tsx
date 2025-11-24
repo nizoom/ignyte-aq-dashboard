@@ -1,96 +1,50 @@
 import { Stack, List, Text, Grid, GridItem, HStack } from "@chakra-ui/react";
 import SensorLinkBtns from "./ui/sensor-link-btns";
-import "../App.css";
-import DropdownComponent from "./ui/drop-down";
+import { type GeneralSensorMetaData } from "../utils/dummy_data_utils";
 
-const SensorList = () => {
+import "../App.css";
+
+interface SensorListProps {
+  sensorMetaData: GeneralSensorMetaData[];
+}
+
+const SensorList = ({ sensorMetaData }: SensorListProps) => {
   return (
     <Stack>
       <List.Root textAlign={"left"} ml={10} gap={5}>
-        <List.Item>
-          <Grid templateColumns="repeat(4, 1fr)" gap={4} alignItems="center">
-            <GridItem colSpan={2}>
-              <HStack alignItems={"flex-end"}>
-                <Text textStyle={"3xl"} style={{ fontFamily: "Josefin Slab" }}>
-                  Sensor 1: 370 Jay St{" "}
-                </Text>
-                <Text
-                  textStyle={"lg"}
-                  p={1}
-                  pl={2}
-                  pr={2}
-                  ml={2.5}
-                  style={{
-                    fontFamily: "Josefin Slab",
-                  }}
-                  textAlign={"center"}
-                >
-                  Online 🟢
-                </Text>
-              </HStack>
-            </GridItem>
+        {sensorMetaData.map((sensor: GeneralSensorMetaData, index) => (
+          <List.Item key={index}>
+            <Grid templateColumns="repeat(4, 1fr)" gap={4} alignItems="center">
+              <GridItem colSpan={2}>
+                <HStack alignItems={"flex-end"}>
+                  <Text
+                    textStyle={"3xl"}
+                    style={{ fontFamily: "Josefin Slab" }}
+                  >
+                    Sensor {index + 1}: {sensor.location_name}
+                  </Text>
+                  <Text
+                    textStyle={"lg"}
+                    p={1}
+                    pl={2}
+                    pr={2}
+                    ml={2.5}
+                    style={{
+                      fontFamily: "Josefin Slab",
+                    }}
+                    textAlign={"center"}
+                  >
+                    {sensor.onlineStatus ? "Online 🟢" : "Offline 🔴"}
+                  </Text>
+                </HStack>
+              </GridItem>
 
-            <GridItem colSpan={2}>
-              <SensorLinkBtns />
-            </GridItem>
-          </Grid>
-        </List.Item>
-
-        <List.Item>
-          <Grid templateColumns="repeat(4, 1fr)" gap={4} alignItems="center">
-            <GridItem colSpan={2}>
-              <HStack alignItems={"flex-end"}>
-                <Text textStyle={"3xl"} style={{ fontFamily: "Josefin Slab" }}>
-                  Sensor 2: 205 Smith St
-                </Text>
-                <Text
-                  textStyle={"lg"}
-                  p={1}
-                  pl={2}
-                  pr={2}
-                  ml={2.5}
-                  style={{
-                    fontFamily: "Josefin Slab",
-                  }}
-                  textAlign={"center"}
-                >
-                  Offline 🔴
-                </Text>
-              </HStack>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <SensorLinkBtns />
-            </GridItem>
-          </Grid>
-        </List.Item>
-
-        <List.Item>
-          <Grid templateColumns="repeat(4, 1fr)" gap={4} alignItems="center">
-            <GridItem colSpan={2}>
-              <HStack>
-                <Text textStyle={"3xl"} style={{ fontFamily: "Josefin Slab" }}>
-                  Sensor 3: 5 Metrotech
-                </Text>
-                <Text
-                  textStyle={"lg"}
-                  p={1}
-                  pl={2}
-                  pr={2}
-                  ml={2.5}
-                  style={{
-                    fontFamily: "Josefin Slab",
-                  }}
-                  textAlign={"center"}
-                >
-                  Online 🟢
-                </Text>
-              </HStack>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <SensorLinkBtns />
-            </GridItem>
-          </Grid>
-        </List.Item>
+              <GridItem colSpan={2}>
+                <SensorLinkBtns location={"place 1"} bounds={[1, 2]} />
+              </GridItem>
+            </Grid>
+          </List.Item>
+        ))}
       </List.Root>
     </Stack>
   );

@@ -1,6 +1,11 @@
 import { Button, HStack } from "@chakra-ui/react";
 
-const SensorLinkBtns = () => {
+type SensorLinkBtnProps = {
+  location: string;
+  bounds: number[];
+};
+
+const SensorLinkBtns = ({}: SensorLinkBtnProps) => {
   return (
     <HStack justifyContent={"center"}>
       <Button className="jump-to-location-btn">Jump to location</Button>

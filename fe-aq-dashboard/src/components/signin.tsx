@@ -7,6 +7,7 @@ import {
   Stack,
   HStack,
 } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
 const SignInForm = () => {
   return (
@@ -30,10 +31,11 @@ const SignInForm = () => {
                   A simple, easy-to-read view that shows current air quality,
                   and health guidance.
                 </Text>
-                <Button className="button-sml" ml={10} mb={5} mt={2.5}>
-                  {" "}
-                  Go
-                </Button>
+                <Link to="/sensor_map">
+                  <Button className="button-sml" ml={10} mb={5} mt={2.5}>
+                    Go
+                  </Button>
+                </Link>
                 <HStack alignContent={"center"}>
                   <Text textStyle={"lg"} className="text-sans">
                     Researcher View
@@ -44,10 +46,12 @@ const SignInForm = () => {
                   pollutants, and longer time series data for scientific
                   analysis.
                 </Text>
-                <Button className="button-sml" ml={10} mt={2.5}>
-                  {" "}
-                  Go
-                </Button>
+                <Link to="/sensor_map">
+                  <Button className="button-sml" ml={10} mt={2.5}>
+                    {" "}
+                    Go
+                  </Button>
+                </Link>
               </Stack>
             </Dialog.Body>
             <Dialog.Footer>

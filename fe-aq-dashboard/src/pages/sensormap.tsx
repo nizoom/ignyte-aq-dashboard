@@ -2,6 +2,10 @@ import { Grid, GridItem, Box, Text, Select, HStack } from "@chakra-ui/react";
 import SensorList from "../components/sensor_list";
 import MapComponent from "../components/map-componenents/map";
 import DropdownComponent from "../components/ui/drop-down";
+import {
+  generalSensorsMetaData,
+  type GeneralSensorMetaData,
+} from "../utils/dummy_data_utils";
 const SensorMap = () => {
   return (
     <Grid templateColumns="repeat(5, 1fr)" gap={20}>
@@ -38,11 +42,11 @@ const SensorMap = () => {
             </GridItem>
           </Grid>
 
-          <SensorList />
+          <SensorList sensorMetaData={generalSensorsMetaData.slice(0, 3)} />
           <Text textStyle={"4xl"} textAlign={"left"} mt={10} ml={10} mb={10}>
             Aggregated Sensors
           </Text>
-          <SensorList />
+          <SensorList sensorMetaData={generalSensorsMetaData.slice(3)} />
         </Box>
       </GridItem>
     </Grid>

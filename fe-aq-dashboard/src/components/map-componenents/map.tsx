@@ -5,6 +5,7 @@ import { Container } from "@chakra-ui/react";
 
 const MapComponent = () => {
   const mapboxKey = import.meta.env.VITE_MAPBOX_KEY;
+  console.log(mapboxKey);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
 
