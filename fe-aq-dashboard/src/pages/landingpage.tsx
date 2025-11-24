@@ -13,7 +13,7 @@ import "../App.css";
 
 const LandingPage = () => {
   return (
-    <Stack>
+    <Stack className="landing-page-wrapper">
       <Box
         bgImage={`url(${landingbg})`}
         bgSize="cover"
