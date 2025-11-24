@@ -1,15 +1,17 @@
-import LandingPage from "./pages/landingpage/landingpage";
-// import { ChakraProvider } from "@chakra-ui/react";
-// import theme from "./theme";
+import LandingPage from "./pages/landingpage";
+import SensorMap from "./pages/sensormap";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import "./App.css";
 
 function App() {
   return (
-    <>
-      {/* <ChakraProvider theme={theme}> */}
-      <LandingPage />
-      {/* </ChakraProvider> */}
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/sensor_map" element={<SensorMap />} />
+      </Routes>
+    </Router>
   );
 }
 

@@ -72,3 +72,29 @@
 .text-sans {
   font-family: "Josefin Sans";
 }
+
+.jump-to-location-btn {
+  background-color: #15616d;
+  font-family: "Josefin Sans";
+  border-radius: 24px;
+  color: #ffecd1;
+}
+.jump-to-location-btn:hover {
+  background-color: #1a7a8a;
+  border-color: #ffecd1;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(21, 97, 109, 0.4);
+}
+.go-to-dashboard-btn {
+  background-color: #30672f;
+  font-family: "Josefin Sans";
+  border-radius: 24px;
+  color: #ffecd1;
+}
+
+.go-to-dashboard-btn:hover {
+  background-color: #3d8a3b;
+  border-color: #ffecd1;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(48, 103, 47, 0.4);
+}

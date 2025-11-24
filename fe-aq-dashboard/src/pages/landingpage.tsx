@@ -1,4 +1,4 @@
-import landingbg from "../../assets/landing-bg.png";
+import landingbg from "../assets/landing-bg.png";
 import {
   Box,
   Container,
@@ -8,8 +8,8 @@ import {
   Button,
   Dialog,
 } from "@chakra-ui/react";
-import SignInForm from "../../components/signin";
-import "../../App.css";
+import SignInForm from "../components/signin";
+import "../App.css";
 
 const LandingPage = () => {
   return (
