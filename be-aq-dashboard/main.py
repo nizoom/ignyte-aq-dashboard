@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import sensors
+from routers import sensors, locations
 
 
 app = FastAPI(  title="Urban Air Quality API",
@@ -23,3 +23,5 @@ async def root():
     return {"message": "Hello World"}
 
 app.include_router(sensors.router, prefix="/sensors", tags=["Sensors"])
+
+app.include_router(locations.router, prefix='/locations', tags=["Locations"])

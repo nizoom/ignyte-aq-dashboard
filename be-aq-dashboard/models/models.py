@@ -15,4 +15,6 @@ class AggMetaData(CSVMetaData):
 # metadata for individual sensor dummy data csv
 class IndMetaData(CSVMetaData):
     address: str
+    coords: List[float]
     name: str
+

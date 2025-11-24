@@ -1,28 +1,42 @@
-import { Grid, GridItem, Box, Text, Select, HStack } from "@chakra-ui/react";
+import { Grid, GridItem, Box, Text } from "@chakra-ui/react";
 import SensorList from "../components/sensor_list";
 import MapComponent from "../components/map-componenents/map";
 import DropdownComponent from "../components/ui/drop-down";
 import {
   generalSensorsMetaData,
-  type GeneralSensorMetaData,
+  type LocationsResponse,
 } from "../utils/dummy_data_utils";
+import { useEffect, useState } from "react";
+import { getLocationsFromDB } from "../utils/fetch_req";
+
 const SensorMap = () => {
+  const [locations, setLocations] = useState<LocationsResponse | undefined>();
+
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getLocationsFromDB();
+      console.log(data);
+      setLocations(data);
+    }
+    fetchData();
+  }, []);
+
   return (
-    <Grid templateColumns="repeat(5, 1fr)" gap={20}>
+    <Grid templateColumns="repeat(5, 1fr)" gap={20} h="100vh">
       <GridItem colSpan={2}>
-        <Box height={"100%"}>
+        <Box height="100vh" position="sticky" top={0}>
           <MapComponent />
         </Box>
       </GridItem>
 
       <GridItem colSpan={3}>
-        <Box h="20">
+        <Box>
           <Text
             textStyle={"5xl"}
             textAlign={"left"}
             mb={10}
             mt={10}
-            style={{ fontFamily: "Josephin Slab" }}
+            style={{ fontFamily: "Josefin Slab" }}
           >
             Map View
           </Text>

@@ -1,13 +1,154 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { add3DBuildings } from "./map_funcs";
 import { Container } from "@chakra-ui/react";
+import type { LocationsResponse } from "../../utils/dummy_data_utils";
+import { getLocationsFromDB } from "../../utils/fetch_req";
+import "mapbox-gl/dist/mapbox-gl.css";
+import { useMapStore } from "../../store";
 
 const MapComponent = () => {
   const mapboxKey = import.meta.env.VITE_MAPBOX_KEY;
-  console.log(mapboxKey);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const [locations, setLocations] = useState<LocationsResponse | undefined>();
+  const setMap = useMapStore((state) => state.setMap); // Add this
+  const setStoreLocations = useMapStore((state) => state.setLocations); // Add this
+
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getLocationsFromDB();
+      setLocations(data);
+      setStoreLocations(data || null); // Set in store too
+    }
+    fetchData();
+  }, [setStoreLocations]);
+
+  const addIndividualMarkers = (map: mapboxgl.Map, data: LocationsResponse) => {
+    // Clear existing markers
+    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current = [];
+
+    // Add markers for individual sensors
+    data.ind_spatial_data.forEach((sensor) => {
+      const el = document.createElement("div");
+      el.className = "custom-marker";
+      el.style.width = "30px";
+      el.style.height = "30px";
+      el.style.borderRadius = "50%";
+      el.style.backgroundColor = "#FF7D00";
+      el.style.border = "3px solid #FFECD1";
+      el.style.cursor = "pointer";
+      el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.3)";
+
+      const marker = new mapboxgl.Marker(el)
+        .setLngLat([sensor.coords[0], sensor.coords[1]])
+        .setPopup(
+          new mapboxgl.Popup({ offset: 25 }).setHTML(`
+              <div style="font-family: 'Josefin Slab'; padding: 5px;">
+                <strong>${sensor.sensor_id}</strong><br/>
+                ${sensor.address}
+              </div>
+            `)
+        )
+        .addTo(map);
+
+      markersRef.current.push(marker);
+    });
+  };
+
+  const addAggregatedBoundaries = (
+    map: mapboxgl.Map,
+    data: LocationsResponse
+  ) => {
+    // Create GeoJSON for aggregated areas
+    const features = data.agg_spatial_data.map((area) => {
+      const [minLng, minLat, maxLng, maxLat] = area.neighborhood_bounds;
+
+      return {
+        type: "Feature" as const,
+        properties: {
+          name: area.neighborhood_name,
+          sensor_id: area.sensor_id,
+        },
+        geometry: {
+          type: "Polygon" as const,
+          coordinates: [
+            [
+              [minLng, minLat],
+              [maxLng, minLat],
+              [maxLng, maxLat],
+              [minLng, maxLat],
+              [minLng, minLat],
+            ],
+          ],
+        },
+      };
+    });
+
+    const geojson = {
+      type: "FeatureCollection" as const,
+      features: features,
+    };
+
+    // Add source
+    if (!map.getSource("agg-areas")) {
+      map.addSource("agg-areas", {
+        type: "geojson",
+        data: geojson,
+      });
+
+      // Add fill layer
+      map.addLayer({
+        id: "agg-areas-fill",
+        type: "fill",
+        source: "agg-areas",
+        paint: {
+          "fill-color": "#15616D",
+          "fill-opacity": 0.2,
+        },
+      });
+
+      // Add border layer
+      map.addLayer({
+        id: "agg-areas-border",
+        type: "line",
+        source: "agg-areas",
+        paint: {
+          "line-color": "#FFECD1",
+          "line-width": 3,
+        },
+      });
+
+      // Add click handler for popups
+      map.on("click", "agg-areas-fill", (e) => {
+        if (!e.features || !e.features[0]) return;
+        const properties = e.features[0].properties;
+
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(
+            `
+            <div style="font-family: 'Josefin Slab'; padding: 5px;">
+              <strong>${properties?.name}</strong><br/>
+              ${properties?.sensor_id}
+            </div>
+          `
+          )
+          .addTo(map);
+      });
+
+      // Change cursor on hover
+      map.on("mouseenter", "agg-areas-fill", () => {
+        map.getCanvas().style.cursor = "pointer";
+      });
+
+      map.on("mouseleave", "agg-areas-fill", () => {
+        map.getCanvas().style.cursor = "";
+      });
+    }
+  };
 
   const initializeMap = (container: HTMLElement) => {
     const map = new mapboxgl.Map({
@@ -21,7 +162,14 @@ const MapComponent = () => {
 
     map.on("load", () => {
       add3DBuildings(map);
+
+      // Add markers and boundaries once locations are loaded
+      if (locations) {
+        addIndividualMarkers(map, locations);
+        addAggregatedBoundaries(map, locations);
+      }
     });
+
     return map;
   };
 
@@ -29,10 +177,13 @@ const MapComponent = () => {
     if (!mapContainerRef.current) return;
     mapboxgl.accessToken = mapboxKey;
     mapRef.current = initializeMap(mapContainerRef.current);
+    setMap(mapRef.current); // Add this line
+
     return () => {
+      markersRef.current.forEach((marker) => marker.remove());
       mapRef.current?.remove();
     };
-  }, []);
+  }, [locations]);
 
   return <Container ref={mapContainerRef} minH={"100vh"}></Container>;
 };

@@ -3,3 +3,4 @@ fe-aq-dashboard/ .env
 .env.local
 .env*.local
 *.env
+node_modules

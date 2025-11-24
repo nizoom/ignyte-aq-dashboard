@@ -40,7 +40,7 @@ const SensorList = ({ sensorMetaData }: SensorListProps) => {
               </GridItem>
 
               <GridItem colSpan={2}>
-                <SensorLinkBtns location={"place 1"} bounds={[1, 2]} />
+                <SensorLinkBtns location_name={sensor.location_name} />
               </GridItem>
             </Grid>
           </List.Item>
