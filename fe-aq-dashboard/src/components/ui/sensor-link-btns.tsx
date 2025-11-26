@@ -6,7 +6,6 @@ type SensorLinkBtnProps = {
 };
 
 const SensorLinkBtns = ({ location_name }: SensorLinkBtnProps) => {
-  console.log(location_name);
   const flyToLocation = useMapStore((state) => state.flyToLocation);
   const locations = useMapStore((state) => state.locations);
 

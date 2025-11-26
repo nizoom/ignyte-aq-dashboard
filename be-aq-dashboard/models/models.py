@@ -17,4 +17,17 @@ class IndMetaData(CSVMetaData):
     address: str
     coords: List[float]
     name: str
+    altitude: int
+
+class SensorRecord(BaseModel):
+    timestamp: datetime
+    temp: float
+    hum: float
+    state_of_charge: float
+    pm2_5: float
+    pm10: float
+    no2: float
+    o3: float 
+
+
 

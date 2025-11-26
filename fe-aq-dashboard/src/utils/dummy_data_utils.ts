@@ -16,18 +16,45 @@ export type GeneralSensorMetaData = {
   onlineStatus: boolean;
   location_name: string;
   filename: string;
+  altitude: number;
 };
 export const generalSensorsMetaData: GeneralSensorMetaData[] = [
-  { onlineStatus: true, location_name: "370 Jay St", filename: "ind_1.csv" },
-  { onlineStatus: false, location_name: "205 Smith St", filename: "ind_2.csv" },
-  { onlineStatus: true, location_name: "5 Metrotech", filename: "ind_3.csv" },
+  {
+    onlineStatus: true,
+    location_name: "370 Jay St",
+    filename: "ind_1.csv",
+    altitude: 50,
+  },
+  {
+    onlineStatus: false,
+    location_name: "205 Smith St",
+    filename: "ind_2.csv",
+    altitude: 100,
+  },
+  {
+    onlineStatus: true,
+    location_name: "5 Metrotech",
+    filename: "ind_3.csv",
+    altitude: 10,
+  },
   {
     onlineStatus: true,
     location_name: "Financial District",
     filename: "agg_1.csv",
+    altitude: 5,
   },
-  { onlineStatus: true, location_name: "Forte Green", filename: "agg_2.csv" },
-  { onlineStatus: true, location_name: "Williamsburg", filename: "agg_3.csv" },
+  {
+    onlineStatus: true,
+    location_name: "Forte Green",
+    filename: "agg_2.csv",
+    altitude: 5,
+  },
+  {
+    onlineStatus: true,
+    location_name: "Williamsburg",
+    filename: "agg_3.csv",
+    altitude: 5,
+  },
 ];
 
 // CSV metadata base
@@ -41,6 +68,7 @@ export interface IndMetaData extends CSVMetaData {
   address: string;
   coords: [number, number]; // lon, lat
   name: string;
+  altitude: number;
 }
 
 // Aggregated metadata

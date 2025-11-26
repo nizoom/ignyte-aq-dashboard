@@ -8,6 +8,7 @@ import {
 } from "../utils/dummy_data_utils";
 import { useEffect, useState } from "react";
 import { getLocationsFromDB } from "../utils/fetch_req";
+import AddSensorBtn from "../components/ui/add-btn";
 
 const SensorMap = () => {
   const [locations, setLocations] = useState<LocationsResponse | undefined>();
@@ -40,14 +41,17 @@ const SensorMap = () => {
           >
             Map View
           </Text>
-          <Grid templateColumns="repeat(2, 1fr)" alignItems="center" mb={5}>
+          <Grid templateColumns="repeat(4, 1fr)" alignItems="center" mb={5}>
             <GridItem colSpan={1}>
               <Text textStyle={"4xl"} textAlign={"left"} ml={10}>
                 My sensors
               </Text>
             </GridItem>
+            <GridItem colSpan={1}>
+              <AddSensorBtn />
+            </GridItem>
             <GridItem
-              colSpan={1}
+              colSpan={2}
               display="flex"
               justifyContent="flex-end"
               mr={"5em"}

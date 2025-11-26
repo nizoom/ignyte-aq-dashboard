@@ -13,24 +13,26 @@ const MapComponent = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const [locations, setLocations] = useState<LocationsResponse | undefined>();
-  const setMap = useMapStore((state) => state.setMap); // Add this
-  const setStoreLocations = useMapStore((state) => state.setLocations); // Add this
+
+  // Get store setters
+  const setMap = useMapStore((state) => state.setMap);
+  const setStoreLocations = useMapStore((state) => state.setLocations);
 
   useEffect(() => {
     async function fetchData() {
       const data = await getLocationsFromDB();
+      console.log("Fetched locations:", data);
       setLocations(data);
-      setStoreLocations(data || null); // Set in store too
+      setStoreLocations(data || null); // Set in store
+      console.log("Locations set in store");
     }
     fetchData();
   }, [setStoreLocations]);
 
   const addIndividualMarkers = (map: mapboxgl.Map, data: LocationsResponse) => {
-    // Clear existing markers
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
 
-    // Add markers for individual sensors
     data.ind_spatial_data.forEach((sensor) => {
       const el = document.createElement("div");
       el.className = "custom-marker";
@@ -54,6 +56,15 @@ const MapComponent = () => {
         )
         .addTo(map);
 
+      const updateMarkerOffset = () => {
+        const zoom = map.getZoom();
+        const offset = -20 * Math.pow(1.5, zoom - 12);
+        marker.setOffset([0, Math.max(offset, -200)]);
+      };
+
+      map.on("zoom", updateMarkerOffset);
+      updateMarkerOffset();
+
       markersRef.current.push(marker);
     });
   };
@@ -62,7 +73,6 @@ const MapComponent = () => {
     map: mapboxgl.Map,
     data: LocationsResponse
   ) => {
-    // Create GeoJSON for aggregated areas
     const features = data.agg_spatial_data.map((area) => {
       const [minLng, minLat, maxLng, maxLat] = area.neighborhood_bounds;
 
@@ -92,14 +102,12 @@ const MapComponent = () => {
       features: features,
     };
 
-    // Add source
     if (!map.getSource("agg-areas")) {
       map.addSource("agg-areas", {
         type: "geojson",
         data: geojson,
       });
 
-      // Add fill layer
       map.addLayer({
         id: "agg-areas-fill",
         type: "fill",
@@ -110,7 +118,6 @@ const MapComponent = () => {
         },
       });
 
-      // Add border layer
       map.addLayer({
         id: "agg-areas-border",
         type: "line",
@@ -121,7 +128,6 @@ const MapComponent = () => {
         },
       });
 
-      // Add click handler for popups
       map.on("click", "agg-areas-fill", (e) => {
         if (!e.features || !e.features[0]) return;
         const properties = e.features[0].properties;
@@ -139,7 +145,6 @@ const MapComponent = () => {
           .addTo(map);
       });
 
-      // Change cursor on hover
       map.on("mouseenter", "agg-areas-fill", () => {
         map.getCanvas().style.cursor = "pointer";
       });
@@ -160,14 +165,26 @@ const MapComponent = () => {
       bearing: -17.6,
     });
 
+    map.on("style.load", () => {
+      map.setFog({
+        range: [0.5, 10],
+        color: "#ffffff",
+        "horizon-blend": 0.1,
+      });
+    });
+
     map.on("load", () => {
+      console.log("Map loaded");
       add3DBuildings(map);
 
-      // Add markers and boundaries once locations are loaded
       if (locations) {
         addIndividualMarkers(map, locations);
         addAggregatedBoundaries(map, locations);
       }
+
+      // Set map in store after it's loaded
+      console.log("Setting map in store");
+      setMap(map);
     });
 
     return map;
@@ -175,17 +192,36 @@ const MapComponent = () => {
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
+    console.log("Initializing map");
     mapboxgl.accessToken = mapboxKey;
     mapRef.current = initializeMap(mapContainerRef.current);
-    setMap(mapRef.current); // Add this line
+
+    setTimeout(() => {
+      mapRef.current?.resize();
+    }, 100);
+
+    const handleResize = () => {
+      mapRef.current?.resize();
+    };
+    window.addEventListener("resize", handleResize);
 
     return () => {
+      window.removeEventListener("resize", handleResize);
       markersRef.current.forEach((marker) => marker.remove());
       mapRef.current?.remove();
     };
-  }, [locations]);
+  }, [locations, setMap]);
 
-  return <Container ref={mapContainerRef} minH={"100vh"}></Container>;
+  return (
+    <div
+      ref={mapContainerRef}
+      style={{
+        width: "100%",
+        height: "100vh",
+        position: "relative",
+      }}
+    />
+  );
 };
 
 export default MapComponent;

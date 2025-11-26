@@ -5,24 +5,30 @@ from models.models import IndMetaData, AggMetaData
 
 # locations for ind sensors 
 ind_spatial_data: List[IndMetaData] = [
-    IndMetaData(
+      IndMetaData(
         sensor_id='ind_1',
         file_name='ind_1.csv',
-        address='370 Jay StBrooklyn, NY 11201',
+        address='370 Jay St Brooklyn, NY 11201',
         coords=[-73.987435, 40.692744],
-        name=""),
+        name="370 Jay St",
+        altitude=50  # Add this
+    ),
     IndMetaData(
         sensor_id='ind_2',
         file_name='ind_2.csv',
         address='205 Smith St, NY 11201',
         coords=[-73.991340, 40.684879],
-        name=""),
+        name="205 Smith St",
+        altitude=100  # Add this
+    ),
     IndMetaData(
         sensor_id='ind_3',
         file_name='ind_3.csv',
         address='5 MetroTech Center, NY 11201',
         coords=[-73.985634, 40.694459],
-        name=""),
+        name="5 MetroTech",
+        altitude=10  # Add this
+    ),
 ] 
 
 agg_spatial_data: List[AggMetaData] = [

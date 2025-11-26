@@ -5,7 +5,7 @@ export async function getLocationsFromDB(): Promise<
 > {
   try {
     const res = await axios.get<LocationsResponse>(
-      "http://localhost:8000/locations/locations"
+      "http://localhost:8000/locations/"
     );
     return res.data;
   } catch (err) {

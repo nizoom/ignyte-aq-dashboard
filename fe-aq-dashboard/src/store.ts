@@ -19,9 +19,24 @@ export const useMapStore = create<MapStore>((set, get) => ({
   flyToLocation: (locationName) => {
     const { map, locations } = get();
     console.log("flyToLocation called with:", locationName);
+    console.log("Map:", map);
+    console.log("Locations:", locations);
 
-    if (!map || !locations) {
-      console.log("Missing map or locations");
+    if (!map) {
+      console.log("Map not ready yet");
+      return;
+    }
+
+    if (!locations) {
+      console.log("Locations not loaded yet");
+      return;
+    }
+
+    // Make sure map is fully loaded
+    if (!map.loaded()) {
+      map.once("load", () => {
+        get().flyToLocation(locationName); // Retry once loaded
+      });
       return;
     }
 
