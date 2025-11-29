@@ -1,5 +1,6 @@
 import { Button, HStack } from "@chakra-ui/react";
 import { useMapStore } from "../../store";
+import { Link } from "react-router-dom";
 
 type SensorLinkBtnProps = {
   location_name: string;
@@ -17,7 +18,9 @@ const SensorLinkBtns = ({ location_name }: SensorLinkBtnProps) => {
       >
         Jump to location
       </Button>
-      <Button className="go-to-dashboard-btn"> Dashboard</Button>
+      <Link to={"/dashboard"}>
+        <Button className="go-to-dashboard-btn"> Dashboard</Button>
+      </Link>
     </HStack>
   );
 };
