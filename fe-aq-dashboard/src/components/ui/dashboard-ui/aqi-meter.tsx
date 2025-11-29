@@ -1,4 +1,4 @@
-import { Container } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { Arc } from "@visx/shape";
 import { Group } from "@visx/group";
 import { scaleLinear } from "@visx/scale";
@@ -24,7 +24,7 @@ const AQIMeter: React.FC<AQIMeterProps> = ({
     { value: 300, color: "#7e0023" }, // Hazardous
   ];
 
-  const margin = { top: 20, right: 30, left: 40, bottom: 20 };
+  const margin = { top: 200, right: 30, left: 30, bottom: 10 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
@@ -63,7 +63,7 @@ const AQIMeter: React.FC<AQIMeterProps> = ({
   const ticks = [0, 50, 100, 150, 200, 300];
 
   return (
-    <Container>
+    <Box display={"inline-block"}>
       <svg width={width} height={height}>
         <Group top={centerY + margin.top} left={centerX + margin.left}>
           {/* Draw gradient segments */}
@@ -83,7 +83,7 @@ const AQIMeter: React.FC<AQIMeterProps> = ({
           {ticks.map((tick) => {
             const angle = -startAngle + (tick / maxAQI) * totalAngle - 11;
             const labelRadius = radius + 20;
-            const x = Math.cos(angle) * labelRadius;
+            const x = Math.cos(angle) * labelRadius + 2;
             const y = Math.sin(angle) * labelRadius;
 
             // Adjust text anchor based on position
@@ -109,7 +109,7 @@ const AQIMeter: React.FC<AQIMeterProps> = ({
           <circle cx={0} cy={5} r={innerRadius - 25} fill="#009966" />
         </Group>
       </svg>
-    </Container>
+    </Box>
   );
 };
 
