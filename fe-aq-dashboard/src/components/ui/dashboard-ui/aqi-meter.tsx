@@ -57,10 +57,7 @@ const AQIMeter: React.FC<AQIMeterProps> = ({
     const meterMsgArray = getMeterData(currentValue).meterMsg;
     return Array.isArray(meterMsgArray) ? meterMsgArray : [meterMsgArray];
   };
-  const getHealthAdvisory = () => {
-    const healthAdvisory = getMeterData(currentValue).healthAdvisory;
-    return healthAdvisory;
-  };
+
   // AQI color thresholds
   const aqiColorInfo = [
     {
