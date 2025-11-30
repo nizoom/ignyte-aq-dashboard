@@ -119,7 +119,7 @@ const AQIMeter: React.FC<AQIMeterProps> = ({
     },
   ];
 
-  const margin = { top: 200, right: 30, left: 30, bottom: 10 };
+  const margin = { top: 200, right: 30, left: 30, bottom: 0 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
