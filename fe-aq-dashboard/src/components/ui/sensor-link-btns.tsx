@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 
 type SensorLinkBtnProps = {
   location_name: string;
+  filename: string;
 };
 
-const SensorLinkBtns = ({ location_name }: SensorLinkBtnProps) => {
+const SensorLinkBtns = ({ location_name, filename }: SensorLinkBtnProps) => {
   const flyToLocation = useMapStore((state) => state.flyToLocation);
   const locations = useMapStore((state) => state.locations);
 
@@ -18,7 +19,7 @@ const SensorLinkBtns = ({ location_name }: SensorLinkBtnProps) => {
       >
         Jump to location
       </Button>
-      <Link to={"/dashboard"}>
+      <Link to={"/dashboard"} state={{ sensorId: filename }}>
         <Button className="go-to-dashboard-btn"> Dashboard</Button>
       </Link>
     </HStack>

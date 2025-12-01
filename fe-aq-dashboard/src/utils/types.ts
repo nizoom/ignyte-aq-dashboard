@@ -8,14 +8,12 @@ export interface AirQaulityRecord {
   hum: number;
   batt_soc: number;
   batt_temp: number;
-  // pm2.5
   pm2_5: number;
   pm10: number;
   no2_we: number;
   ox_we: number;
 }
 
-// metadata for collection of records
 export interface AirQualityDataset {
   sensor_id: string;
   start_date: string;
@@ -28,17 +26,14 @@ export interface AirQualityDataset {
 export interface AirQaulityQueryParams {
   sensor_id: string;
   time_range: "day" | "week" | "month" | "3 month";
-  start_date?: string; // Optional custom range
+  start_date?: string;
   end_date?: string;
 }
 
-export interface AirQualityStats {
-  avg_pm2_5: number;
-  max_pm2_5: number;
-  min_pm2_5: number;
-  avg_temp: number;
-  // ... other stats
+export interface AirQualityResponse {
+  dataset: AirQualityDataset;
 }
+
 export interface GeneralSensorMetaData {
   onlineStatus: boolean;
   location_name: string;

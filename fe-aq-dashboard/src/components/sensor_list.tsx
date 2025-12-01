@@ -1,6 +1,6 @@
 import { Stack, List, Text, Grid, GridItem, HStack } from "@chakra-ui/react";
 import SensorLinkBtns from "./ui/sensor-link-btns";
-import { type GeneralSensorMetaData } from "../utils/dummy_data_utils";
+import { type GeneralSensorMetaData } from "../utils/types";
 
 import "../App.css";
 
@@ -40,7 +40,10 @@ const SensorList = ({ sensorMetaData }: SensorListProps) => {
               </GridItem>
 
               <GridItem colSpan={2}>
-                <SensorLinkBtns location_name={sensor.location_name} />
+                <SensorLinkBtns
+                  location_name={sensor.location_name}
+                  filename={sensor.filename}
+                />
               </GridItem>
             </Grid>
           </List.Item>

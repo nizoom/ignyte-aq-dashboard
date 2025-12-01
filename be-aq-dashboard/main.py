@@ -1,7 +1,7 @@
 from typing import Any, Dict
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import sensors, locations
+from routers import locations, sensors
 from models.models import IndMetaData, AggMetaData, SensorRecord
 
 
@@ -24,6 +24,6 @@ app.add_middleware(
 # async def root():
 #     return {"message": "Hello World"}
 
-app.include_router(sensors.router, prefix="/sensors", tags=["Sensors"])
+app.include_router(sensors.router, prefix="/sensor", tags=["Sensors"])
 
 app.include_router(locations.router, prefix='/locations', tags=["Locations"])

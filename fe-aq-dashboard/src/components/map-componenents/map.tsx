@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { add3DBuildings } from "./map_funcs";
 import { Container } from "@chakra-ui/react";
-import type { LocationsResponse } from "../../utils/dummy_data_utils";
+import type { LocationsResponse } from "../../utils/types";
 import { getLocationsFromDB } from "../../utils/fetch_req";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useMapStore } from "../../store";

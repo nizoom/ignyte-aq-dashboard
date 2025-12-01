@@ -2,10 +2,7 @@ import { Grid, GridItem, Box, Text } from "@chakra-ui/react";
 import SensorList from "../components/sensor_list";
 import MapComponent from "../components/map-componenents/map";
 import DropdownComponent from "../components/ui/drop-down";
-import {
-  generalSensorsMetaData,
-  type LocationsResponse,
-} from "../utils/dummy_data_utils";
+import { generalSensorsMetaData, type LocationsResponse } from "../utils/types";
 import { useEffect, useState } from "react";
 import { getLocationsFromDB } from "../utils/fetch_req";
 import AddSensorBtn from "../components/ui/add-btn";
@@ -16,7 +13,6 @@ const SensorMap = () => {
   useEffect(() => {
     async function fetchData() {
       const data = await getLocationsFromDB();
-      console.log(data);
       setLocations(data);
     }
     fetchData();

@@ -1,12 +1,33 @@
-import { Grid, GridItem, Text, Separator, Box, VStack } from "@chakra-ui/react";
-import { useState } from "react";
+import { Grid, GridItem, Text, Separator, VStack } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
 import AQIMeter from "../components/ui/dashboard-ui/aqi-meter";
-
+import { useLocation } from "react-router-dom";
+import { getSensorDataFromDB } from "../utils/fetch_req";
+import type { AirQualityDataset } from "../utils/types";
+// import LineGraphs from "../components/ui/dashboard-ui/graphs/line-graph";
 const DashboardPage = () => {
   const [healthMsg, setHealthMsg] = useState("");
   const handleHealthAdvMsg = (msg: string) => {
     setHealthMsg(msg);
   };
+
+  const sensor_id = useLocation().state.sensorId;
+  console.log(sensor_id);
+
+  const [dataset, setDataset] = useState<AirQualityDataset | null>(null);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getSensorDataFromDB({
+        sensor_id,
+        time_range: "day",
+      });
+
+      if (data) setDataset(data);
+    }
+
+    load();
+  }, [sensor_id]);
 
   return (
     <Grid templateColumns={"repeat(2, 1fr)"} justifyContent={"center"} gap={0}>
@@ -36,9 +57,7 @@ const DashboardPage = () => {
         </VStack>
       </GridItem>
 
-      <GridItem colSpan={1} textAlign={"center"}>
-        {/* Right side content */}
-      </GridItem>
+      <GridItem colSpan={1} textAlign={"center"}></GridItem>
     </Grid>
   );
 };

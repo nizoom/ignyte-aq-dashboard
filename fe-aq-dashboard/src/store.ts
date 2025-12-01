@@ -1,7 +1,7 @@
 // stores/mapStore.ts
 import { create } from "zustand";
 import type mapboxgl from "mapbox-gl";
-import type { LocationsResponse } from "./utils/dummy_data_utils";
+import type { LocationsResponse } from "./utils/types";
 
 type MapStore = {
   map: mapboxgl.Map | null;
