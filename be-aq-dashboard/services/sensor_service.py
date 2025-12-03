@@ -1,7 +1,10 @@
 from datetime import datetime
 # from models.sensor import SensorReading, SensorHistory, DailyAQI
 import os
-from typing import List
+from typing import List, Optional
+from models.models import AirQualityResponse
+# Import AirQualityResponse from its module, or define it here if needed
+# from models.sensor import AirQualityResponse
 
 import os
 from pathlib import Path
@@ -40,3 +43,7 @@ def get_file_names(folder_path: Path) -> List[str]:
             file_names.append(file_name)
     
     return file_names
+
+def retrieve_data_in_range(sensor_id: str, time_range: str, start_date: Optional[str], end_date: Optional[str]) -> AirQualityResponse:
+    
+    pass

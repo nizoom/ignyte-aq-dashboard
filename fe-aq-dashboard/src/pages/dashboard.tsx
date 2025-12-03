@@ -11,15 +11,16 @@ const DashboardPage = () => {
     setHealthMsg(msg);
   };
 
-  const sensor_id = useLocation().state.sensorId;
-  console.log(sensor_id);
+  const location = useLocation();
+  const { sensorId, currentValue } = location.state || {};
 
   const [dataset, setDataset] = useState<AirQualityDataset | null>(null);
 
   useEffect(() => {
     async function load() {
+      // console.log(sensorId);
       const data = await getSensorDataFromDB({
-        sensor_id,
+        sensor_id: sensorId,
         time_range: "day",
       });
 
@@ -27,7 +28,7 @@ const DashboardPage = () => {
     }
 
     load();
-  }, [sensor_id]);
+  }, [sensorId]);
 
   return (
     <Grid templateColumns={"repeat(2, 1fr)"} justifyContent={"center"} gap={0}>

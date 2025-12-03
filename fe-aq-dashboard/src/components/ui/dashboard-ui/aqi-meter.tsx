@@ -2,6 +2,7 @@ import { Box } from "@chakra-ui/react";
 import { Arc } from "@visx/shape";
 import { Group } from "@visx/group";
 import { scaleLinear } from "@visx/scale";
+import { useEffect } from "react";
 
 interface AQIMeterProps {
   width: number;
@@ -37,7 +38,7 @@ const AQIMeter: React.FC<AQIMeterProps> = ({
   const getMeterData = (currentValue: number): AqiInfo => {
     for (const [index, colorObj] of aqiColorInfo.entries()) {
       const next = aqiColorInfo[index + 1];
-      handleHealthAdvMsg(colorObj.healthAdvisory);
+
       if (!next) {
         // If there's no next segment, return the last color object if value is in or above this segment
         if (currentValue >= colorObj.value) return colorObj;
@@ -52,6 +53,11 @@ const AQIMeter: React.FC<AQIMeterProps> = ({
 
     return aqiColorInfo[aqiColorInfo.length - 1];
   };
+
+  useEffect(() => {
+    const data = getMeterData(currentValue);
+    handleHealthAdvMsg(data.healthAdvisory);
+  }, [currentValue, handleHealthAdvMsg]);
 
   const getMeterMsg = () => {
     const meterMsgArray = getMeterData(currentValue).meterMsg;

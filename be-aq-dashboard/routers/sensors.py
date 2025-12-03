@@ -23,8 +23,15 @@ def get_sensor_data(
     print(f"   time_range: {time_range}")
     print(f"   start_date: {start_date}")
     print(f"   end_date: {end_date}")
-    check_for_real_sensor(sensor_id)
-    
+    real_sensor = check_for_real_sensor(sensor_id)
+    if real_sensor:
+        # ...
+        return 
+    else:
+        raise HTTPException(
+            status_code=404,
+            detail=f'Sensor with ID {sensor_id} not found'
+        )
     # Return mock data for now
     return {
         "sensor_id": sensor_id,

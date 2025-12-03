@@ -10,6 +10,7 @@ import type {
 export async function getSensorDataFromDB(
   params: AirQaulityQueryParams
 ): Promise<AirQualityDataset | undefined> {
+  console.log(params.sensor_id);
   try {
     const res = await axios.get<AirQualityResponse>(
       `http://0.0.0.0:8000/sensor/${params.sensor_id}`, // Changed to 0.0.0.0
