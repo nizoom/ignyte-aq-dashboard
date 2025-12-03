@@ -21,7 +21,9 @@ const DashboardPage = () => {
       // console.log(sensorId);
       const data = await getSensorDataFromDB({
         sensor_id: sensorId,
-        time_range: "day",
+        time_range: "week",
+        start_date: "2024-08-01",
+        end_date: "2024-08-07",
       });
 
       if (data) setDataset(data);

@@ -22,7 +22,7 @@ export async function getSensorDataFromDB(
         },
       }
     );
-
+    console.log(res.data.dataset);
     return res.data.dataset;
   } catch (err) {
     console.error("Error fetching data:", err);
