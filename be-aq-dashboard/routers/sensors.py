@@ -14,7 +14,7 @@ def test():
 @router.get("/{sensor_id}")
 def get_sensor_data(
     sensor_id: str,
-    time_range: Literal["day", "week", "month", "3 month"] = "day",
+    time_range: Literal["Day", "Week", "Month", "3 month"] = "day",
     start_date: Optional[str] = None,
     end_date: Optional[str] = None
 ):

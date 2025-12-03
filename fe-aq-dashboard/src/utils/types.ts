@@ -25,7 +25,7 @@ export interface AirQualityDataset {
 
 export interface AirQaulityQueryParams {
   sensor_id: string;
-  time_range: "day" | "week" | "month" | "3 month";
+  time_range: "Day" | "Week" | "Month" | "3 month";
   start_date?: string;
   end_date?: string;
 }

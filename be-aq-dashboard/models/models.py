@@ -54,7 +54,7 @@ class AirQualityQueryParams(BaseModel):
     sensor_id: str
     
     # Predefined time range options
-    time_range: Literal["day", "week", "month", "3 month"]
+    time_range: Literal["Day", "Week", "Month", "3 month"]
     
     # Optional custom range dates (uses Optional or standard | None syntax)
     # The default value of None makes the field optional in FastAPI

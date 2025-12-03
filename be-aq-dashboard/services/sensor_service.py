@@ -48,10 +48,10 @@ def get_file_names(folder_path: Path) -> List[str]:
 def determine_interval(time_range: str) -> tuple[str, str]:
     """Determine aggregation interval and pandas resample rule."""
     interval_map = {
-        "day": ("hourly", "1H"),        # 24 points (much better!)
-        "week": ("6H", "6H"),           # 28 points (4 per day)
-        "month": ("daily", "1D"),       # 30 points
-        "3 month": ("weekly", "1W"),    # 12-13 points
+        "Day": ("hourly", "1H"),
+        "Week": ("6H", "6H"),
+        "Month": ("daily", "1D"),
+        "3 month": ("weekly", "1W"),
     }
     return interval_map.get(time_range, ("hourly", "1H"))
 
