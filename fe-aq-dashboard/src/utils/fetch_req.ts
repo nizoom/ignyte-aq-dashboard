@@ -9,7 +9,7 @@ import type {
 // Dashboard queries
 export async function getSensorDataFromDB(
   params: AirQaulityQueryParams
-): Promise<AirQualityDataset | undefined> {
+): Promise<AirQualityResponse | undefined> {
   console.log(params.sensor_id);
   try {
     const res = await axios.get<AirQualityResponse>(
@@ -22,8 +22,8 @@ export async function getSensorDataFromDB(
         },
       }
     );
-    console.log(res.data.dataset);
-    return res.data.dataset;
+    console.log(res.data);
+    return res.data;
   } catch (err) {
     console.error("Error fetching data:", err);
   }

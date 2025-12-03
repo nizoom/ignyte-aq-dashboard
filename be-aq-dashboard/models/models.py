@@ -30,7 +30,7 @@ class AirQualityDataset(BaseModel):
     sensor_id: str
     start_date: datetime = Field(..., description="Start timestamp of the data range.")
     end_date: datetime = Field(..., description="End timestamp of the data range.")
-    interval: Literal["10min", "hourly", "daily"] = Field(
+    interval: Literal["30min", "hourly", "3H", "6H", "daily", "weekly"] = Field(
         ...,
         description="Aggregation interval of the data records."
     )

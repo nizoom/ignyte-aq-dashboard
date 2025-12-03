@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import AQIMeter from "../components/ui/dashboard-ui/aqi-meter";
 import { useLocation } from "react-router-dom";
 import { getSensorDataFromDB } from "../utils/fetch_req";
-import type { AirQualityDataset } from "../utils/types";
-// import LineGraphs from "../components/ui/dashboard-ui/graphs/line-graph";
+import type { AirQualityResponse } from "../utils/types";
+import LineGraphs from "../components/ui/dashboard-ui/graphs/line-graph";
 const DashboardPage = () => {
   const [healthMsg, setHealthMsg] = useState("");
   const handleHealthAdvMsg = (msg: string) => {
@@ -14,11 +14,10 @@ const DashboardPage = () => {
   const location = useLocation();
   const { sensorId, currentValue } = location.state || {};
 
-  const [dataset, setDataset] = useState<AirQualityDataset | null>(null);
+  const [dataset, setDataset] = useState<AirQualityResponse | null>(null);
 
   useEffect(() => {
     async function load() {
-      // console.log(sensorId);
       const data = await getSensorDataFromDB({
         sensor_id: sensorId,
         time_range: "week",
@@ -60,7 +59,9 @@ const DashboardPage = () => {
         </VStack>
       </GridItem>
 
-      <GridItem colSpan={1} textAlign={"center"}></GridItem>
+      <GridItem colSpan={1} textAlign={"center"}>
+        {dataset && <LineGraphs width={700} height={600} data={dataset} />}
+      </GridItem>
     </Grid>
   );
 };

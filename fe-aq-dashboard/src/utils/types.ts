@@ -29,9 +29,18 @@ export interface AirQaulityQueryParams {
   start_date?: string;
   end_date?: string;
 }
+export interface AirQualityStats {
+  avg_pm2_5: number;
+  max_pm2_5: number;
+  min_pm2_5: number;
+  avg_temp: number;
+  avg_hum: number;
+  count: number;
+}
 
 export interface AirQualityResponse {
   dataset: AirQualityDataset;
+  stats: AirQualityStats; // The '?' makes the property optional, matching Python's Optional[AirQualityStats]
 }
 
 export interface GeneralSensorMetaData {
