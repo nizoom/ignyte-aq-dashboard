@@ -7,10 +7,11 @@ import {
   Select,
   createListCollection,
   Box,
+  Button,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import AQIMeter from "../components/ui/dashboard-ui/aqi-meter";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { getSensorDataFromDB } from "../utils/fetch_req";
 import type { AirQualityResponse } from "../utils/types";
 import LineGraphs from "../components/ui/dashboard-ui/graphs/line-graph";
@@ -88,8 +89,15 @@ const DashboardPage = () => {
   });
 
   return (
-    <Grid templateColumns={"repeat(2, 1fr)"} justifyContent={"center"} gap={0}>
-      <GridItem colSpan={1}>
+    <Grid templateColumns={"auto 1fr 1fr"} alignItems="start" gap={0}>
+      <GridItem maxW={200}>
+        <Link to={"/sensor_map"}>
+          <Button className="jump-to-location-btn " m={5}>
+            ← Back
+          </Button>{" "}
+        </Link>
+      </GridItem>
+      <GridItem mr={20}>
         <VStack textAlign={"center"}>
           <Text fontSize={"2xl"} mt={10} mb={-20} pb={0}>
             Today's AQI
@@ -126,7 +134,7 @@ const DashboardPage = () => {
         </VStack>
       </GridItem>
 
-      <GridItem colSpan={1} textAlign={"center"}>
+      <GridItem textAlign={"center"} ml={-90}>
         <Select.Root
           collection={timeRanges}
           mt={10}
