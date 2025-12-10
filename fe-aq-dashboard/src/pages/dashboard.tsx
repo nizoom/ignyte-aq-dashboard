@@ -4,9 +4,9 @@ import {
   Text,
   Separator,
   VStack,
-  Button,
   Select,
   createListCollection,
+  Box,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import AQIMeter from "../components/ui/dashboard-ui/aqi-meter";
@@ -14,6 +14,7 @@ import { useLocation } from "react-router-dom";
 import { getSensorDataFromDB } from "../utils/fetch_req";
 import type { AirQualityResponse } from "../utils/types";
 import LineGraphs from "../components/ui/dashboard-ui/graphs/line-graph";
+import DatePicker from "../components/ui/dashboard-ui/datepicker";
 
 type TimeRange = "Day" | "Week" | "Month" | "3 month";
 
@@ -24,31 +25,44 @@ const DashboardPage = () => {
   };
 
   const location = useLocation();
-  const { sensorId, currentValue } = location.state || {};
+  const { sensorId } = location.state || {};
 
   const [dataset, setDataset] = useState<AirQualityResponse | null>(null);
   const [timeRange, setTimeRange] = useState<TimeRange>("Day");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(
+    new Date(2024, 9, 29) // October 29, 2024
+  );
+
+  const startDate = new Date(2025, 7, 1, 0, 0, 0); // Aug 1, 2025
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 90); // 90 days later
 
   useEffect(() => {
     async function load() {
-      const startDate = "2024-10-01"; // Fixed start
+      if (!selectedDate) return; // Don't load if no date selected
+
+      // Format selectedDate to YYYY-MM-DD
+      const startDate = selectedDate.toISOString().split("T")[0];
       let endDate = "";
 
       // Calculate end date based on time range
+      const end = new Date(selectedDate);
       switch (timeRange) {
         case "Day":
-          endDate = "2024-10-02"; // 1 day
+          end.setDate(end.getDate() + 1); // 1 day
           break;
         case "Week":
-          endDate = "2024-10-08"; // 7 days
+          end.setDate(end.getDate() + 7); // 7 days
           break;
         case "Month":
-          endDate = "2024-11-01"; // 1 month
+          end.setMonth(end.getMonth() + 1); // 1 month
           break;
         case "3 month":
-          endDate = "2025-01-01"; // 3 months
+          end.setMonth(end.getMonth() + 3); // 3 months
           break;
       }
+
+      endDate = end.toISOString().split("T")[0];
 
       const data = await getSensorDataFromDB({
         sensor_id: sensorId,
@@ -58,10 +72,11 @@ const DashboardPage = () => {
       });
 
       if (data) setDataset(data);
+      console.log(dataset?.AQIStats);
     }
 
     load();
-  }, [sensorId, timeRange]);
+  }, [sensorId, timeRange, selectedDate]); // Added selectedDate to dependencies
 
   const timeRanges = createListCollection({
     items: [
@@ -76,13 +91,13 @@ const DashboardPage = () => {
     <Grid templateColumns={"repeat(2, 1fr)"} justifyContent={"center"} gap={0}>
       <GridItem colSpan={1}>
         <VStack textAlign={"center"}>
-          <Text fontSize={"2xl"} mt={10} mb={-10} pb={0}>
+          <Text fontSize={"2xl"} mt={10} mb={-20} pb={0}>
             Today's AQI
           </Text>
           <AQIMeter
             width={700}
             height={600}
-            currentValue={75}
+            currentValue={dataset?.AQIStats.overall_aqi ?? 0}
             handleHealthAdvMsg={handleHealthAdvMsg}
           />
           <Separator
@@ -100,6 +115,14 @@ const DashboardPage = () => {
           >
             {healthMsg}
           </Text>
+          <Box mt={10}>
+            <DatePicker
+              selectedDate={selectedDate}
+              onDateChange={setSelectedDate}
+              startDate={new Date(2024, 7, 1)} // Aug 1, 2024
+              endDate={new Date(2024, 10, 29)} // Nov 29, 2024 (or calculate +90 days)
+            />
+          </Box>
         </VStack>
       </GridItem>
 

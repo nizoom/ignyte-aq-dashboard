@@ -17,6 +17,8 @@ Test endpoint to verify sensor routes are working.
   "status": "success",
   "message": "Test route working"
 }
+
+    uvicorn main:app --reload
 ```
 
 ---

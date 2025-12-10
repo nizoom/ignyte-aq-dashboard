@@ -79,6 +79,25 @@ class AirQualityStats(BaseModel):
     avg_hum: float
     count: int
 
+#   data needed to calc aqi
+class AQICalcData(BaseModel): 
+  avg_pm2_5: float
+  avg_pm10: float
+  avg_no2: float
+  avg_ox: float
+
+class PollutantAQI(BaseModel):
+    """Individual pollutant AQI details."""
+    aqi: int  # Changed to int since you're rounding
+    concentration: float
+    category: str
+
+class AQIStats(BaseModel):
+    """Overall AQI statistics."""
+    overall_aqi: Optional[int] = None  # Can be None if no data
+    dominant_pollutant: Optional[str] = None  # Can be None if no data
+    individual_aqis: Dict[str, PollutantAQI]  # Changed from Dict[str, float]
+
 # Resnponse object type sent to FE
 class AirQualityResponse(BaseModel):
     """Complete API response with dataset and optional statistics."""
@@ -87,6 +106,10 @@ class AirQualityResponse(BaseModel):
         None, 
         description="Pre-calculated summary statistics (optional for performance)."
     )
+    AQIStats: AQIStats
+
+
+
 # ----------------------------------------------------------------------
 # 5. General Sensor Metadata (Equivalent to GeneralSensorMetaData)
 # ----------------------------------------------------------------------

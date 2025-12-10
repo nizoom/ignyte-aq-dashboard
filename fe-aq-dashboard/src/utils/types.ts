@@ -38,9 +38,15 @@ export interface AirQualityStats {
   count: number;
 }
 
+export interface AQIStats {
+  overall_aqi: number;
+  dominant_pollutant: string;
+  individual_aqis?: { [key: string]: number }; // Optional dictionary (object) of pollutant names to AQI values
+}
 export interface AirQualityResponse {
   dataset: AirQualityDataset;
   stats: AirQualityStats; // The '?' makes the property optional, matching Python's Optional[AirQualityStats]
+  AQIStats: AQIStats;
 }
 
 export interface GeneralSensorMetaData {
