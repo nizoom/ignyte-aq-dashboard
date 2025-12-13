@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
-import { add3DBuildings } from "./map_funcs";
-import { Container } from "@chakra-ui/react";
+import { add3DBuildings } from "./map-funcs";
 import type { LocationsResponse } from "../../utils/types";
 import { getLocationsFromDB } from "../../utils/fetch_req";
 import "mapbox-gl/dist/mapbox-gl.css";
+import "threebox-plugin/dist/threebox.css";
+
 import { useMapStore } from "../../store";
+
+import { addSensorStems, clearThreebox } from "./sensors-stems";
 
 const MapComponent = () => {
   const mapboxKey = import.meta.env.VITE_MAPBOX_KEY;
@@ -44,26 +47,55 @@ const MapComponent = () => {
       el.style.cursor = "pointer";
       el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.3)";
 
-      const marker = new mapboxgl.Marker(el)
+      const altitude = sensor.altitude || 50; // Default 50m if not specified
+      // console.log(altitude + " meters");
+
+      const marker = new mapboxgl.Marker({
+        element: el,
+        anchor: "bottom",
+        pitchAlignment: "map", // Makes marker tilt with map pitch
+        rotationAlignment: "map",
+      })
         .setLngLat([sensor.coords[0], sensor.coords[1]])
         .setPopup(
           new mapboxgl.Popup({ offset: 25 }).setHTML(`
-              <div style="font-family: 'Josefin Slab'; padding: 5px;">
+              <div style="font-family: 'Josefin Slab'; padding: 5px; color: black">
+              
                 <strong>${sensor.sensor_id}</strong><br/>
-                ${sensor.address}
+                Altidude: ${altitude} meters
+                
               </div>
             `)
         )
         .addTo(map);
 
+      // Fixed altitude offset based on current zoom, updates on zoom/pitch changes
       const updateMarkerOffset = () => {
         const zoom = map.getZoom();
-        const offset = -20 * Math.pow(1.5, zoom - 12);
-        marker.setOffset([0, Math.max(offset, -200)]);
+        const pitch = map.getPitch();
+
+        // More accurate calculation based on Mapbox projection
+        // Meters per pixel at this latitude and zoom
+        const metersPerPixel =
+          (156543.03392 * Math.cos((sensor.coords[1] * Math.PI) / 180)) /
+          Math.pow(2, zoom);
+
+        // Convert altitude to pixels
+        const altitudeInPixels = altitude / metersPerPixel;
+
+        // Apply pitch adjustment
+        const pitchAdjustment = Math.sin((pitch * Math.PI) / 180);
+        const verticalOffset = altitudeInPixels * pitchAdjustment;
+
+        // Clamp the offset to prevent going off-screen
+        const clampedOffset = Math.max(Math.min(verticalOffset, 500), -500);
+
+        marker.setOffset([0, -clampedOffset]);
       };
 
       map.on("zoom", updateMarkerOffset);
-      updateMarkerOffset();
+      map.on("pitch", updateMarkerOffset);
+      map.on("rotate", updateMarkerOffset);
 
       markersRef.current.push(marker);
     });
@@ -178,6 +210,7 @@ const MapComponent = () => {
       add3DBuildings(map);
 
       if (locations) {
+        addSensorStems(map, locations); // Add 3D stems first
         addIndividualMarkers(map, locations);
         addAggregatedBoundaries(map, locations);
       }
@@ -208,6 +241,7 @@ const MapComponent = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
       markersRef.current.forEach((marker) => marker.remove());
+      clearThreebox(); // Clean up threebox
       mapRef.current?.remove();
     };
   }, [locations, setMap]);

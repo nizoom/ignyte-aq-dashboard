@@ -10,8 +10,8 @@ type SensorLinkBtnProps = {
 const SensorLinkBtns = ({ location_name, filename }: SensorLinkBtnProps) => {
   const flyToLocation = useMapStore((state) => state.flyToLocation);
   const locations = useMapStore((state) => state.locations);
-  console.log("filename");
-  console.log(filename);
+  // console.log("filename");
+  // console.log(filename);
 
   return (
     <HStack justifyContent={"center"}>

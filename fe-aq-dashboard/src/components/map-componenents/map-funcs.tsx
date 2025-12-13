@@ -38,4 +38,5 @@ export function add3DBuildings(map: MapboxMap) {
     },
     labelLayerId
   );
+  console.log("3D buildings added");
 }

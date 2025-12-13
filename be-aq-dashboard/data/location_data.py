@@ -19,7 +19,15 @@ ind_spatial_data: List[IndMetaData] = [
         address='205 Smith St, NY 11201',
         coords=[-73.991340, 40.684879],
         name="205 Smith St",
-        altitude=100  # Add this
+        altitude=60  # Add this
+    ),
+    IndMetaData(
+        sensor_id='ind_2',
+        file_name='ind_2.csv',
+        address='205 Smith St, NY 11201',
+        coords=[-73.991340, 40.684879],
+        name="205 Smith St",
+        altitude=90  # Add this
     ),
     IndMetaData(
         sensor_id='ind_3',
@@ -27,7 +35,7 @@ ind_spatial_data: List[IndMetaData] = [
         address='5 MetroTech Center, NY 11201',
         coords=[-73.985634, 40.694459],
         name="5 MetroTech",
-        altitude=10  # Add this
+        altitude=0  # Add this
     ),
 ] 
 
