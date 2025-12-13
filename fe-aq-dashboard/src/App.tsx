@@ -2,6 +2,8 @@ import LandingPage from "./pages/landingpage";
 import SensorMap from "./pages/sensormap";
 import DashboardPage from "./pages/dashboard";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react";
+// import { handleRedirectResult } from "./auth/signin-funcs";
 
 import "./App.css";
 

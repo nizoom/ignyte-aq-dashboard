@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import landingbg from "../assets/landing-bg.png";
 import {
   Box,
@@ -10,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import SignInForm from "../components/signin";
 import "../App.css";
+import { checkCurrentUser } from "../auth/signin-funcs";
 
 const LandingPage = () => {
   return (
@@ -61,6 +63,14 @@ const LandingPage = () => {
         {" "}
         By IgNYte Lab
       </Text>
+      <Button
+        position="fixed"
+        top={4}
+        right={4}
+        onClick={() => checkCurrentUser()}
+      >
+        Check User
+      </Button>
     </Stack>
   );
 };

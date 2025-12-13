@@ -7,7 +7,8 @@ import {
   Stack,
   HStack,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
+import { authenticateWithGoogle } from "../auth/signin-funcs";
 
 const SignInForm = () => {
   return (
@@ -31,12 +32,29 @@ const SignInForm = () => {
                   A simple, easy-to-read view that shows current air quality,
                   and health guidance.
                 </Text>
-                <Link to="/sensor_map">
-                  <Button className="button-sml" ml={10} mb={5} mt={2.5}>
-                    Go
+
+                <HStack>
+                  <Button
+                    className="button-sml"
+                    ml={10}
+                    mt={2.5}
+                    onClick={() => authenticateWithGoogle("resident")}
+                  >
+                    {" "}
+                    Sign in
                   </Button>
-                </Link>
-                <HStack alignContent={"center"}>
+                  <Button
+                    className="button-sml"
+                    ml={10}
+                    mt={2.5}
+                    onClick={() => authenticateWithGoogle("resident")}
+                  >
+                    {" "}
+                    Sign up
+                  </Button>
+                </HStack>
+
+                <HStack alignContent={"center"} mt={10}>
                   <Text textStyle={"lg"} className="text-sans">
                     Researcher View
                   </Text>
@@ -46,12 +64,29 @@ const SignInForm = () => {
                   pollutants, and longer time series data for scientific
                   analysis.
                 </Text>
-                <Link to="/sensor_map">
-                  <Button className="button-sml" ml={10} mt={2.5}>
+                {/* <Link to="/sensor_map"> */}
+                <HStack>
+                  <Button
+                    className="button-sml"
+                    ml={10}
+                    mt={2.5}
+                    onClick={() => authenticateWithGoogle("researcher")}
+                  >
                     {" "}
-                    Go
+                    Sign in
                   </Button>
-                </Link>
+                  <Button
+                    className="button-sml"
+                    ml={10}
+                    mt={2.5}
+                    onClick={() => authenticateWithGoogle("researcher")}
+                  >
+                    {" "}
+                    Sign up
+                  </Button>
+                </HStack>
+
+                {/* </Link> */}
               </Stack>
             </Dialog.Body>
             <Dialog.Footer>

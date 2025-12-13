@@ -4,3 +4,4 @@ fe-aq-dashboard/ .env
 .env*.local
 *.env
 node_modules
+__pycache__/
