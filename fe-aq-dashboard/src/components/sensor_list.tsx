@@ -1,7 +1,7 @@
 import { Stack, List, Text, Grid, GridItem, HStack } from "@chakra-ui/react";
 import SensorLinkBtns from "./ui/sensor-link-btns";
 import { type GeneralSensorMetaData } from "../utils/types";
-
+import { Tooltip } from "../src/components/ui/tooltip";
 import "../App.css";
 
 interface SensorListProps {
@@ -23,19 +23,40 @@ const SensorList = ({ sensorMetaData }: SensorListProps) => {
                   >
                     Sensor {index + 1}: {sensor.location_name}
                   </Text>
-                  <Text
-                    textStyle={"lg"}
-                    p={1}
-                    pl={2}
-                    pr={2}
-                    ml={2.5}
-                    style={{
-                      fontFamily: "Josefin Slab",
-                    }}
-                    textAlign={"center"}
-                  >
-                    {sensor.onlineStatus ? "Online 🟢" : "Offline 🔴"}
-                  </Text>
+                  {sensor.onlineStatus ? (
+                    <Text
+                      textStyle={"lg"}
+                      p={1}
+                      pl={2}
+                      pr={2}
+                      ml={2.5}
+                      style={{
+                        fontFamily: "Josefin Slab",
+                      }}
+                      textAlign={"center"}
+                    >
+                      Online 🟢
+                    </Text>
+                  ) : (
+                    <Tooltip
+                      content="Email a.guibaud@nyu.edu for assistance"
+                      positioning={{ placement: "right-end" }}
+                    >
+                      <Text
+                        textStyle={"lg"}
+                        p={1}
+                        pl={2}
+                        pr={2}
+                        ml={2.5}
+                        style={{
+                          fontFamily: "Josefin Slab",
+                        }}
+                        textAlign={"center"}
+                      >
+                        Offline 🔴
+                      </Text>
+                    </Tooltip>
+                  )}
                 </HStack>
               </GridItem>
 

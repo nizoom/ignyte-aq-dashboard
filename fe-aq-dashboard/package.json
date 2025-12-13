@@ -30,6 +30,7 @@
   "dependencies": {
     "@chakra-ui/react": "^3.29.0",
     "@chakra-ui/theme-utils": "^2.0.21",
+    "@chakra-ui/tooltip": "^2.3.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@visx/axis": "^3.12.0",
