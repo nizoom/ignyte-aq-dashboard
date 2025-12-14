@@ -59,9 +59,9 @@ const MapComponent = () => {
         .setLngLat([sensor.coords[0], sensor.coords[1]])
         .setPopup(
           new mapboxgl.Popup({ offset: 25 }).setHTML(`
-              <div style="font-family: 'Josefin Slab'; padding: 5px; color: black">
+              <div style="font-family: 'Josefin Slab'; padding: 0px; color: #ffecd1; background-color: #001524; padding: 10px; border-radius: 20px">
               
-                <strong>${sensor.sensor_id}</strong><br/>
+                <strong>Sensor ID: ${sensor.sensor_id}</strong><br/>
                 Altidude: ${altitude} meters
                 
               </div>

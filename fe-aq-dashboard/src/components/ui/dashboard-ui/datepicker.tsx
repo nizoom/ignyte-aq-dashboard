@@ -6,6 +6,7 @@ interface DatePickerProps {
   onDateChange: (date: Date) => void;
   startDate?: Date;
   endDate?: Date;
+  setdatepickerStatus: (status: boolean) => void;
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({
@@ -13,6 +14,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   onDateChange,
   startDate = new Date(2024, 7, 1), // Aug 1, 2024
   endDate = new Date(2024, 10, 29), // Nov 29, 2024
+  setdatepickerStatus,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date(2024, 7, 1));
@@ -160,12 +162,16 @@ const DatePicker: React.FC<DatePickerProps> = ({
   return (
     <Box position="relative" display="flex" justifyContent="center">
       <Button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          setIsOpen(!isOpen);
+          setdatepickerStatus(!isOpen);
+        }}
         bg={colors.teal}
         color={colors.cream}
         _hover={{ bg: colors.darkBrown }}
         minW="200px"
-        borderRadius="md"
+        borderRadius="ld"
+        className="jump-to-location-btn "
       >
         📅 {formatDate(selectedDate)}
       </Button>
@@ -198,7 +204,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
                 _hover={{ bg: colors.darkBrown }}
                 onClick={handlePrevMonth}
                 disabled={!canGoPrev}
-                borderRadius="md"
+                borderRadius="4xl"
               >
                 ←
               </Button>
@@ -242,45 +248,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
         </Box>
       )}
     </Box>
-  );
-};
-
-// Example usage component
-const DatePickerDemo: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-
-  const colors = {
-    darkNavy: "#001524",
-    darkBrown: "#78290F",
-    orange: "#FF7D00",
-    cream: "#FFECD1",
-    teal: "#15616D",
-  };
-
-  return (
-    <Stack gap={4} p={8} bg={colors.darkNavy} minH="100vh">
-      <DatePicker selectedDate={selectedDate} onDateChange={setSelectedDate} />
-
-      {/* Display Selected Date */}
-      {selectedDate && (
-        <Box p={4} bg={colors.teal} borderRadius="md" w="300px" mx="auto">
-          <Text fontSize="sm" color={colors.cream}>
-            Selected Date:
-          </Text>
-          <Text fontSize="lg" fontWeight="bold" color={colors.cream}>
-            {selectedDate.toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
-          </Text>
-          <Text fontSize="xs" color={colors.cream} mt={2} opacity={0.8}>
-            ISO: {selectedDate.toISOString()}
-          </Text>
-        </Box>
-      )}
-    </Stack>
   );
 };
 

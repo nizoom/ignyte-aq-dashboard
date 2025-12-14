@@ -16,6 +16,7 @@ import { getSensorDataFromDB } from "../utils/fetch_req";
 import type { AirQualityResponse } from "../utils/types";
 import LineGraphs from "../components/ui/dashboard-ui/graphs/line-graph";
 import DatePicker from "../components/ui/dashboard-ui/datepicker";
+import "../app.css";
 
 type TimeRange = "Day" | "Week" | "Month" | "3 month";
 
@@ -24,6 +25,7 @@ const DashboardPage = () => {
   const handleHealthAdvMsg = (msg: string) => {
     setHealthMsg(msg);
   };
+  const [datepickerStatus, setdatepickerStatus] = useState(false);
 
   const location = useLocation();
   const { sensorId } = location.state || {};
@@ -73,7 +75,7 @@ const DashboardPage = () => {
       });
 
       if (data) setDataset(data);
-      console.log(dataset?.AQIStats);
+      // console.log(dataset?.AQIStats);
     }
 
     load();
@@ -123,14 +125,32 @@ const DashboardPage = () => {
           >
             {healthMsg}
           </Text>
-          <Box mt={10}>
+          <Box mt={10} className="jump-to-location-btn ">
             <DatePicker
+              setdatepickerStatus={setdatepickerStatus}
               selectedDate={selectedDate}
               onDateChange={setSelectedDate}
               startDate={new Date(2024, 7, 1)} // Aug 1, 2024
               endDate={new Date(2024, 10, 29)} // Nov 29, 2024 (or calculate +90 days)
             />
           </Box>
+          {datepickerStatus ? null : (
+            <>
+              <Separator
+                orientation="vertical"
+                borderColor="#FFECD1"
+                borderWidth="1px"
+                zIndex={2}
+                mt={10}
+                h={100}
+              />
+              <Link to={"/battery_diagnostics"}>
+                <Button className="jump-to-location-btn ">
+                  Sensor diagnostics
+                </Button>
+              </Link>
+            </>
+          )}
         </VStack>
       </GridItem>
 

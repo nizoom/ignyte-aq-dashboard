@@ -38,6 +38,10 @@
   border-width: 2px;
 }
 
+.mapboxgl-popup-content {
+  padding: 0px !important;
+}
+
 .button:hover,
 .button-sml:hover {
   background-color: #ff7d00;
