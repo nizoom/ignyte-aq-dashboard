@@ -2,7 +2,7 @@ from datetime import datetime
 # from models.sensor import SensorReading, SensorHistory, DailyAQI
 import os
 from typing import List, Optional
-from models.models import AQICalcData, AQIStats, AirQualityResponse, AirQualityRecord, AirQualityStats, AirQualityDataset
+from models.models import AQICalcData, AQIStats, AirQualityResponse, AirQualityRecord, AirQualityStats, AirQualityDataset, BatteryData, BatteryRecord
 import pandas as pd
 from services.aqi_utils import calc_aqi
 # Import AirQualityResponse from its module, or define it here if needed
@@ -150,6 +150,55 @@ def retrieve_data_in_range(
         dataset=dataset,
         stats=stats,
         AQIStats=aqi_stats
+    )
+
+def retrieve_battery_data(sensor_id: str, start_dt: str) -> BatteryData:
+    """
+    Retrieve battery data for 3 days starting from start_dt, aggregated in 2-hour chunks.
+    """
+    # Load file
+    parent_folder = "agg" if sensor_id.startswith("agg") else "ind"
+    file_path = os.path.join(f'data/{parent_folder}', f'{sensor_id}')
+    df = pd.read_csv(file_path)
+    
+    # Parse timestamp
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    
+    # Parse start date and calculate end date (3 days later)
+    start_date = pd.to_datetime(start_dt)
+    end_date = start_date + pd.Timedelta(days=3)
+    
+    # Filter to 3-day range
+    df_filtered = df[(df['timestamp'] >= start_date) & (df['timestamp'] <= end_date)]
+    
+    if df_filtered.empty:
+        raise ValueError(f"No battery data found for sensor {sensor_id} in specified range")
+    
+    # Resample to 2-hour chunks
+    df_resampled = df_filtered.set_index('timestamp').resample('2H').agg({
+        'batt_soc': 'mean',
+        'batt_temp': 'mean',
+    }).reset_index()
+    
+    # Remove NaN rows
+    df_resampled = df_resampled.dropna()
+    
+    # Convert to records
+    records = [BatteryRecord(**row) for row in df_resampled.to_dict('records')]
+    
+    if not records:
+        raise ValueError(f"No valid battery data after resampling")
+    
+    # Find latest record by comparing timestamps
+    latest_record = records[0]
+    for record in records:
+        if record.timestamp > latest_record.timestamp:
+            latest_record = record
+    
+    # Return battery data
+    return BatteryData(
+        records=records,
+        latest_record=latest_record
     )
     
 def getAQI(pre_agg_data, start_dt) -> AQIStats:

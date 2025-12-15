@@ -82,8 +82,8 @@ export const addSensorStems = (map: Map, data: LocationsResponse) => {
             opacity: 1,
           });
 
-          console.log("Line object created:", line_vertical);
-          console.log("Line visible?:", line_vertical.visible);
+          //   console.log("Line object created:", line_vertical);
+          //   console.log("Line visible?:", line_vertical.visible);
 
           tb.add(line_vertical);
 
@@ -95,7 +95,7 @@ export const addSensorStems = (map: Map, data: LocationsResponse) => {
         }
       });
 
-      console.log("🎉 Final TB objects:", tb.objects);
+      //   console.log("🎉 Final TB objects:", tb.objects);
     },
     render: function (gl: any, matrix: any) {
       tb.update();

@@ -4,6 +4,9 @@ import type {
   AirQualityDataset,
   AirQualityResponse,
   AirQaulityQueryParams,
+  BatteryRecord,
+  BatteryQueryParams,
+  BatteryData,
 } from "./types";
 
 // Dashboard queries
@@ -28,6 +31,27 @@ export async function getSensorDataFromDB(
     console.error("Error fetching data:", err);
   }
 }
+
+export async function getBatteryDataFromDb(
+  params: BatteryQueryParams
+): Promise<BatteryData | undefined> {
+  // console.log(params.sensor_id);
+  try {
+    const res = await axios.get<BatteryData>(
+      `http://0.0.0.0:8000/sensor/${params.sensor_id}/battery`, // Changed to 0.0.0.0
+      {
+        params: {
+          start_date: params.start_date,
+        },
+      }
+    );
+    console.log(res.data);
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching data:", err);
+  }
+}
+
 // Map queries
 
 export async function getLocationsFromDB(): Promise<

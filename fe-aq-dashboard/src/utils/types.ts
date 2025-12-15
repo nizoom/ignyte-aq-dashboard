@@ -23,6 +23,11 @@ export interface AirQualityDataset {
   count: number;
 }
 
+export interface BatteryQueryParams {
+  sensor_id: string;
+  start_date?: string;
+}
+
 export interface AirQaulityQueryParams {
   sensor_id: string;
   time_range: "Day" | "Week" | "Month" | "3 month";
@@ -49,6 +54,16 @@ export interface AirQualityResponse {
   AQIStats: AQIStats;
 }
 
+export interface BatteryRecord {
+  timestamp: Date;
+  batt_soc: number;
+  batt_temp: number;
+}
+
+export interface BatteryData {
+  records: BatteryRecord[];
+  latest_record: BatteryRecord;
+}
 export interface GeneralSensorMetaData {
   onlineStatus: boolean;
   location_name: string;

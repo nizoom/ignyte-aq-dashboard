@@ -1,8 +1,7 @@
-from typing import Any, Dict
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import locations, sensors
-from models.models import IndMetaData, AggMetaData, SensorRecord
+# from models.models import IndMetaData, AggMetaData, SensorRecord
 
 
 app = FastAPI(  title="Urban Air Quality API",
@@ -18,11 +17,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# print(IndMetaData, AggMetaData, SensorRecord)
-# @app.get("/")
-# async def root():
-#     return {"message": "Hello World"}
 
 app.include_router(sensors.router, prefix="/sensor", tags=["Sensors"])
 

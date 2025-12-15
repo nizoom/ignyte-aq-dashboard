@@ -3,7 +3,7 @@ import numpy as np
 from datetime import datetime, timedelta
 
 # Set random seed for reproducibility
-np.random.seed(42)
+np.random.seed(55)
 
 # Generate timestamps for 3 months with 10-minute intervals
 start_date = datetime(2024, 8, 1, 0, 0, 0)
@@ -86,7 +86,7 @@ for ts in timestamps:
 df = pd.DataFrame(data)
 
 # Save to CSV
-df.to_csv('sensor_data_3_3months.csv', index=False)
+df.to_csv('ind_1.csv', index=False)
 
 print(f"Generated {len(df)} rows of sensor data")
 print(f"\nData summary:")

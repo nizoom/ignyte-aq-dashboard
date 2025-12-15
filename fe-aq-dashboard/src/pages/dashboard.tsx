@@ -12,11 +12,13 @@ import {
 import { useState, useEffect } from "react";
 import AQIMeter from "../components/ui/dashboard-ui/aqi-meter";
 import { Link, useLocation } from "react-router-dom";
-import { getSensorDataFromDB } from "../utils/fetch_req";
+import { getSensorDataFromDB, getBatteryDataFromDb } from "../utils/fetch_req";
 import type { AirQualityResponse } from "../utils/types";
 import LineGraphs from "../components/ui/dashboard-ui/graphs/line-graph";
 import DatePicker from "../components/ui/dashboard-ui/datepicker";
 import "../app.css";
+import { filterDataForBatteryDiag } from "../utils/diag_utils";
+import type { BatteryData } from "../utils/types";
 
 type TimeRange = "Day" | "Week" | "Month" | "3 month";
 
@@ -39,6 +41,9 @@ const DashboardPage = () => {
   const startDate = new Date(2025, 7, 1, 0, 0, 0); // Aug 1, 2025
   const endDate = new Date(startDate);
   endDate.setDate(endDate.getDate() + 90); // 90 days later
+
+  // battery data
+  const [batteryData, setBatteryData] = useState<BatteryData | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -66,7 +71,7 @@ const DashboardPage = () => {
       }
 
       endDate = end.toISOString().split("T")[0];
-
+      console.log(sensorId);
       const data = await getSensorDataFromDB({
         sensor_id: sensorId,
         time_range: timeRange,
@@ -74,7 +79,20 @@ const DashboardPage = () => {
         end_date: endDate,
       });
 
-      if (data) setDataset(data);
+      const batteryData = await getBatteryDataFromDb({
+        sensor_id: sensorId,
+        start_date: startDate,
+      });
+
+      if (batteryData) {
+        setBatteryData(batteryData);
+      }
+
+      if (data) {
+        console.log(data);
+        setDataset(data);
+      }
+
       // console.log(dataset?.AQIStats);
     }
 
@@ -144,11 +162,24 @@ const DashboardPage = () => {
                 mt={10}
                 h={100}
               />
-              <Link to={"/battery_diagnostics"}>
-                <Button className="jump-to-location-btn ">
-                  Sensor diagnostics
+              {batteryData ? (
+                <Link
+                  to={"/battery_diagnostics"}
+                  state={{
+                    batteryData: batteryData,
+                    batteryPercentage: batteryData.latest_record?.batt_soc || 0,
+                    sensorId: sensorId,
+                  }}
+                >
+                  <Button className="jump-to-location-btn">
+                    Sensor diagnostics
+                  </Button>
+                </Link>
+              ) : (
+                <Button className="jump-to-location-btn" disabled>
+                  Loading diagnostics...
                 </Button>
-              </Link>
+              )}
             </>
           )}
         </VStack>

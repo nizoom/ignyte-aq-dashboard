@@ -150,5 +150,33 @@ class SensorRecord(BaseModel):
     no2: float
     o3: float 
 
+# ----------------------------------------------------------------------
+# 6. Battery Data
+# ----------------------------------------------------------------------
 
 
+class BatteryRecord(BaseModel):
+    timestamp: datetime = Field(
+        ...,
+        description="The time of the battery measurement (ISO 8601 format)."
+    )
+    batt_soc: float = Field(
+        ...,
+        ge=0,
+        le=100,
+        description="Battery State of Charge (SOC) as a percentage (0 to 100)."
+    )
+    batt_temp: float = Field(
+        ...,
+        description="Battery temperature in degrees Celsius."
+    )
+
+class BatteryData(BaseModel):
+    records: List[BatteryRecord] = Field(
+        ...,
+        description="An array of historical BatteryRecord objects."
+    )
+    latest_record: BatteryRecord = Field(
+        ...,
+        description="The most recent BatteryRecord object."
+    )
