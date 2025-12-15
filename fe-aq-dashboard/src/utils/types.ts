@@ -107,6 +107,26 @@ export const generalSensorsMetaData: GeneralSensorMetaData[] = [
     filename: "agg_3.csv",
     altitude: 5,
   },
+  // researcher view
+
+  {
+    onlineStatus: true,
+    location_name: "Liberty Plaza",
+    filename: "agg_1.csv",
+    altitude: 150,
+  },
+  {
+    onlineStatus: true,
+    location_name: "1 Hanson Place",
+    filename: "agg_2.csv",
+    altitude: 100,
+  },
+  {
+    onlineStatus: true,
+    location_name: "25 Kent Avenue",
+    filename: "agg_3.csv",
+    altitude: 45,
+  },
 ];
 
 // CSV metadata base
@@ -134,4 +154,5 @@ export interface AggMetaData extends CSVMetaData {
 export interface LocationsResponse {
   ind_spatial_data: IndMetaData[];
   agg_spatial_data: AggMetaData[];
+  researcher_view_spatial_data: IndMetaData[];
 }

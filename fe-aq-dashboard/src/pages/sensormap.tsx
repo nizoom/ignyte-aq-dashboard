@@ -6,9 +6,11 @@ import { generalSensorsMetaData, type LocationsResponse } from "../utils/types";
 import { useEffect, useState } from "react";
 import { getLocationsFromDB } from "../utils/fetch_req";
 import AddSensorBtn from "../components/ui/add-btn";
+import { useAuthStore } from "../store";
 
 const SensorMap = () => {
   const [locations, setLocations] = useState<LocationsResponse | undefined>();
+  const role = useAuthStore((s) => s.user?.role);
 
   useEffect(() => {
     async function fetchData() {
@@ -17,6 +19,12 @@ const SensorMap = () => {
     }
     fetchData();
   }, []);
+
+  const isResearcher = useAuthStore((s) => s.user?.role === "researcher");
+
+  const visibleMetaData = isResearcher
+    ? generalSensorsMetaData.slice(6) // 6 → end
+    : generalSensorsMetaData.slice(3, 6); // 3 → 6
 
   return (
     <Grid templateColumns="repeat(5, 1fr)" gap={20} h="100vh">
@@ -55,12 +63,15 @@ const SensorMap = () => {
               <DropdownComponent />
             </GridItem>
           </Grid>
-
+          {/*    <>
+      {role === "researcher" && <ResearcherDashboard />}
+      {role === "resident" && <ResidentDashboard />}
+    </>*/}
           <SensorList sensorMetaData={generalSensorsMetaData.slice(0, 3)} />
           <Text textStyle={"4xl"} textAlign={"left"} mt={10} ml={10} mb={10}>
-            Aggregated Sensors
+            {isResearcher ? "Sensors in network (other)" : "Aggregated Sensors"}
           </Text>
-          <SensorList sensorMetaData={generalSensorsMetaData.slice(3)} />
+          <SensorList sensorMetaData={visibleMetaData} />
         </Box>
       </GridItem>
     </Grid>

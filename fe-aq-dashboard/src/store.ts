@@ -47,6 +47,8 @@ export const useMapStore = create<MapStore>((set, get) => ({
   setMap: (map) => set({ map }),
   setLocations: (locations) => set({ locations }),
   flyToLocation: (locationName) => {
+    const isResearcher = useAuthStore.getState().user?.role === "researcher";
+
     const { map, locations } = get();
     console.log("flyToLocation called with:", locationName);
     console.log("Map:", map);
@@ -71,8 +73,15 @@ export const useMapStore = create<MapStore>((set, get) => ({
     }
 
     // Try to find in individual sensors first
-    let sensor = locations.ind_spatial_data.find(
-      (s) => s.address.includes(locationName) || s.name === locationName
+    const indLocations = isResearcher
+      ? [
+          ...locations.ind_spatial_data,
+          ...locations.researcher_view_spatial_data,
+        ]
+      : locations.ind_spatial_data;
+
+    const sensor = indLocations.find(
+      (s) => s.name === locationName || s.address?.includes(locationName)
     );
 
     // If not found, try aggregated sensors

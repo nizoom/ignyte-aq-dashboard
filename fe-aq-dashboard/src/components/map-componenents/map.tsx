@@ -5,7 +5,7 @@ import type { LocationsResponse } from "../../utils/types";
 import { getLocationsFromDB } from "../../utils/fetch_req";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "threebox-plugin/dist/threebox.css";
-
+import { useAuthStore } from "../../store";
 import { useMapStore } from "../../store";
 
 import { addSensorStems, clearThreebox } from "./sensors-stems";
@@ -21,6 +21,8 @@ const MapComponent = () => {
   const setMap = useMapStore((state) => state.setMap);
   const setStoreLocations = useMapStore((state) => state.setLocations);
 
+  const user = useAuthStore((state) => state.user);
+  const isResearcher = user?.role === "researcher";
   useEffect(() => {
     async function fetchData() {
       const data = await getLocationsFromDB();
@@ -30,13 +32,15 @@ const MapComponent = () => {
       console.log("Locations set in store");
     }
     fetchData();
-  }, [setStoreLocations]);
+  }, [setStoreLocations, user?.role]); // Add user?.role dependency
 
   const addIndividualMarkers = (map: mapboxgl.Map, data: LocationsResponse) => {
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
-
-    data.ind_spatial_data.forEach((sensor) => {
+    const sensorsToShow = isResearcher
+      ? [...data.ind_spatial_data, ...(data.researcher_view_spatial_data || [])]
+      : data.ind_spatial_data;
+    sensorsToShow.forEach((sensor) => {
       const el = document.createElement("div");
       el.className = "custom-marker";
       el.style.width = "30px";
@@ -105,6 +109,10 @@ const MapComponent = () => {
     map: mapboxgl.Map,
     data: LocationsResponse
   ) => {
+    if (isResearcher) {
+      // don't show agg data if researcher
+      return;
+    }
     const features = data.agg_spatial_data.map((area) => {
       const [minLng, minLat, maxLng, maxLat] = area.neighborhood_bounds;
 
@@ -223,9 +231,21 @@ const MapComponent = () => {
     return map;
   };
 
+  // Re-render markers when user role changes
+  useEffect(() => {
+    if (mapRef.current && locations && mapRef.current.loaded()) {
+      console.log(
+        "User role changed, updating markers. isResearcher:",
+        isResearcher
+      );
+      addIndividualMarkers(mapRef.current, locations);
+      addAggregatedBoundaries(mapRef.current, locations);
+    }
+  }, [isResearcher, locations]); // Re-run when role or locations change
+
   useEffect(() => {
     if (!mapContainerRef.current) return;
-    console.log("Initializing map");
+    // console.log("Initializing map");
     mapboxgl.accessToken = mapboxKey;
     mapRef.current = initializeMap(mapContainerRef.current);
 

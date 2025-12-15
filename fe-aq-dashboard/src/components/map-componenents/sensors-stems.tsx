@@ -9,7 +9,7 @@ let isInitialized = false;
 export const initializeThreebox = (map: Map) => {
   if (!threeboxInstance && !isInitialized) {
     isInitialized = true;
-    console.log("🔧 Initializing Threebox...");
+    // console.log("🔧 Initializing Threebox...");
 
     const ThreeboxConstructor = Threebox as any;
     threeboxInstance = new ThreeboxConstructor(
@@ -20,48 +20,48 @@ export const initializeThreebox = (map: Map) => {
       }
     );
 
-    console.log("✅ Threebox initialized:", threeboxInstance);
+    // console.log("✅ Threebox initialized:", threeboxInstance);
     (window as any).tb = threeboxInstance;
   }
   return threeboxInstance;
 };
 
 export const addSensorStems = (map: Map, data: LocationsResponse) => {
-  console.log(
-    "🎯 Adding sensor stems for",
-    data.ind_spatial_data.length,
-    "sensors"
-  );
+  // console.log(
+  //   "🎯 Adding sensor stems for",
+  //   data.ind_spatial_data.length,
+  //   "sensors"
+  // );
 
   if (map.getLayer("sensor-stems-3d")) {
-    console.log("Removing existing layer");
+    // console.log("Removing existing layer");
     map.removeLayer("sensor-stems-3d");
   }
 
   const tb = initializeThreebox(map);
 
   // Check if tb has the right methods
-  console.log("TB methods:", {
-    hasLine: typeof tb.line,
-    hasAdd: typeof tb.add,
-    hasUpdate: typeof tb.update,
-    objects: tb.objects,
-  });
+  // console.log("TB methods:", {
+  //   hasLine: typeof tb.line,
+  //   hasAdd: typeof tb.add,
+  //   hasUpdate: typeof tb.update,
+  //   objects: tb.objects,
+  // });
 
   map.addLayer({
     id: "sensor-stems-3d",
     type: "custom",
     renderingMode: "3d",
     onAdd: function (map: any, gl: any) {
-      console.log("🎨 onAdd called");
+      // console.log("🎨 onAdd called");
 
       data.ind_spatial_data.forEach((sensor, index) => {
         const altitude = sensor.altitude || 50;
         const [lng, lat] = sensor.coords;
 
-        console.log(
-          `📍 Stem ${index + 1}: [${lng}, ${lat}] height: ${altitude}m`
-        );
+        // console.log(
+        //   `📍 Stem ${index + 1}: [${lng}, ${lat}] height: ${altitude}m`
+        // );
 
         try {
           // Try different geometry format - Threebox might want objects
@@ -73,7 +73,7 @@ export const addSensorStems = (map: Map, data: LocationsResponse) => {
             ],
           };
 
-          console.log("Geometry:", lineGeometry);
+          // console.log("Geometry:", lineGeometry);
 
           const line_vertical = tb.line({
             geometry: lineGeometry.coordinates,
@@ -88,8 +88,8 @@ export const addSensorStems = (map: Map, data: LocationsResponse) => {
           tb.add(line_vertical);
 
           // Check if it was added
-          console.log("TB objects after add:", tb.objects);
-          console.log(`✅ Stem ${index + 1} added`);
+          // console.log("TB objects after add:", tb.objects);
+          // console.log(`✅ Stem ${index + 1} added`);
         } catch (error) {
           console.error(`❌ Error adding stem ${index + 1}:`, error);
         }
@@ -102,7 +102,7 @@ export const addSensorStems = (map: Map, data: LocationsResponse) => {
     },
   });
 
-  console.log("✅ Layer added to map");
+  // console.log("✅ Layer added to map");
 };
 
 export const clearThreebox = () => {
