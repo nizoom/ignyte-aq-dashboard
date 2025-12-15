@@ -5,11 +5,15 @@ import { AxisBottom, AxisLeft } from "@visx/axis";
 import { GridRows } from "@visx/grid";
 import { curveMonotoneX } from "@visx/curve";
 import { extent, max } from "d3-array";
+import { IoMdDownload } from "react-icons/io";
+import { exportPMDataToCSV, exportGasDataToCSV } from "./graph-util";
+
 import type {
   AirQualityResponse,
   AirQaulityRecord,
 } from "../../../../utils/types";
-import { Flex, Box, Text } from "@chakra-ui/react";
+import "../../../../App.css";
+import { Flex, Box, Text, Button, HStack } from "@chakra-ui/react";
 
 interface LineChartProps {
   width: number;
@@ -75,9 +79,24 @@ const LineGraph = ({ width, height, data }: LineChartProps) => {
     yScale: any;
   }) => (
     <Box mb={8}>
-      <Text fontSize="lg" fontWeight="600" mb={2} color="gray.400">
-        {title}
-      </Text>
+      <HStack justify="space-between" width="100%">
+        <Button
+          width={10}
+          className="jump-to-location-btn"
+          onClick={() => {
+            title === "Particulate Matter"
+              ? exportPMDataToCSV(data)
+              : exportGasDataToCSV(data);
+          }}
+        >
+          <IoMdDownload />
+        </Button>
+        <Text fontSize="lg" fontWeight="600" mb={2}>
+          {title}
+        </Text>
+        <Box width={10} /> {/* Empty spacer to balance */}
+      </HStack>
+
       <svg width={width} height={height}>
         <Group left={margin.left} top={margin.top}>
           {/* Grid */}
@@ -157,6 +176,7 @@ const LineGraph = ({ width, height, data }: LineChartProps) => {
   return (
     <Flex flexDirection="column" p={4}>
       {/* Particulate Matter Chart */}
+
       <Chart
         title="Particulate Matter"
         yLabel="Concentration (µg/m³)"
