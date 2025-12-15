@@ -9,8 +9,21 @@ import {
 } from "@chakra-ui/react";
 // import { Link } from "react-router-dom";
 import { authenticateWithGoogle } from "../auth/signin-funcs";
+import { useNavigate } from "react-router-dom";
 
 const SignInForm = () => {
+  const navigate = useNavigate();
+
+  const handleAuth = async (role: "researcher" | "resident") => {
+    try {
+      await authenticateWithGoogle(role);
+
+      // ✅ Redirect only after success
+      navigate("/sensor_map", { replace: true });
+    } catch (err) {
+      console.error("Signup failed", err);
+    }
+  };
   return (
     <>
       <Portal>
@@ -38,7 +51,7 @@ const SignInForm = () => {
                     className="button-sml"
                     ml={10}
                     mt={2.5}
-                    onClick={() => authenticateWithGoogle("resident")}
+                    onClick={() => handleAuth("resident")}
                   >
                     {" "}
                     Sign in
@@ -47,7 +60,7 @@ const SignInForm = () => {
                     className="button-sml"
                     ml={10}
                     mt={2.5}
-                    onClick={() => authenticateWithGoogle("resident")}
+                    onClick={() => handleAuth("resident")}
                   >
                     {" "}
                     Sign up
@@ -70,7 +83,7 @@ const SignInForm = () => {
                     className="button-sml"
                     ml={10}
                     mt={2.5}
-                    onClick={() => authenticateWithGoogle("researcher")}
+                    onClick={() => handleAuth("researcher")}
                   >
                     {" "}
                     Sign in
@@ -79,7 +92,7 @@ const SignInForm = () => {
                     className="button-sml"
                     ml={10}
                     mt={2.5}
-                    onClick={() => authenticateWithGoogle("researcher")}
+                    onClick={() => handleAuth("researcher")}
                   >
                     {" "}
                     Sign up

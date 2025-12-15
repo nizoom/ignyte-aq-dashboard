@@ -1,7 +1,7 @@
-// auth/signin-form.ts
 import { signInWithPopup } from "firebase/auth";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
-import { auth, provider, db } from "./firebase-config";
+import { auth, db, provider } from "./firebase-config";
+import { useAuthStore } from "../store";
 
 export const authenticateWithGoogle = async (role: string) => {
   try {
@@ -10,48 +10,41 @@ export const authenticateWithGoogle = async (role: string) => {
 
     console.log("✅ Sign in successful:", result.user.email);
 
-    // Save user to Firestore
     const userRef = doc(db, "users", result.user.uid);
+    let userData: any;
+
     const snap = await getDoc(userRef);
 
     if (!snap.exists()) {
       console.log("📝 Creating user doc with role:", role);
-      await setDoc(userRef, {
+
+      userData = {
         uid: result.user.uid,
         email: result.user.email,
         displayName: result.user.displayName,
         role,
         createdAt: serverTimestamp(),
-      });
+      };
+
+      await setDoc(userRef, userData);
       console.log("✅ User doc created successfully");
     } else {
-      console.log("✅ User doc already exists:", snap.data());
+      userData = snap.data();
+      console.log("✅ User doc already exists:", userData);
     }
 
-    return result.user;
+    // ✅ NEW: write user into Zustand immediately
+    useAuthStore.getState().setAuth(result.user, {
+      uid: result.user.uid,
+      role: userData.role,
+    });
+
+    return {
+      firebaseUser: result.user,
+      user: userData,
+    };
   } catch (error: any) {
     console.error("❌ Sign in error:", error.code, error.message);
-
-    // The COOP error appears but auth might still work
-    // Check if user was actually signed in despite the error
-    setTimeout(async () => {
-      if (auth.currentUser) {
-        console.log("✅ User signed in despite error!");
-        const userRef = doc(db, "users", auth.currentUser.uid);
-        const snap = await getDoc(userRef);
-
-        if (!snap.exists()) {
-          await setDoc(userRef, {
-            uid: auth.currentUser.uid,
-            email: auth.currentUser.email,
-            displayName: auth.currentUser.displayName,
-            role,
-            createdAt: serverTimestamp(),
-          });
-        }
-      }
-    }, 1000);
-
     throw error;
   }
 };

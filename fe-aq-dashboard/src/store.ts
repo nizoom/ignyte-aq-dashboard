@@ -1,7 +1,7 @@
 // stores/mapStore.ts
 import { create } from "zustand";
-import type mapboxgl from "mapbox-gl";
 import type { LocationsResponse } from "./utils/types";
+import type { User } from "firebase/auth";
 
 type MapStore = {
   map: mapboxgl.Map | null;
@@ -10,6 +10,36 @@ type MapStore = {
   setLocations: (locations: LocationsResponse | null) => void;
   flyToLocation: (locationName: string) => void;
 };
+
+export type UserRole = "researcher" | "resident";
+
+export interface AppUser {
+  uid: string;
+  role: UserRole;
+}
+
+interface AuthState {
+  firebaseUser: User | null;
+  user: AppUser | null;
+  loading: boolean;
+
+  setAuth: (fbUser: User | null, user: AppUser | null) => void;
+  setLoading: (loading: boolean) => void;
+
+  isResearcher: () => boolean;
+}
+
+export const useAuthStore = create<AuthState>((set, get) => ({
+  firebaseUser: null,
+  user: null,
+  loading: true,
+
+  setAuth: (firebaseUser, user) => set({ firebaseUser, user, loading: false }),
+
+  setLoading: (loading) => set({ loading }),
+
+  isResearcher: () => get().user?.role === "researcher",
+}));
 
 export const useMapStore = create<MapStore>((set, get) => ({
   map: null,
