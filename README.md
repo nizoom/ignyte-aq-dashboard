@@ -1,10 +1,11 @@
 # Urban Air Quality Dashboard
 
+
+
 > **Visualizing urban air pollution in three dimensions** – because air quality varies dramatically between street level and rooftops, yet most dashboards show flat 2D maps.
 
-![3D Sensor Visualization](docs/images/3d-map-demo.gif)
 _Real vertical sensor positioning reveals pollution gradients invisible in standard AQI maps_
-
+![alt text]([http://url/to/img.png](https://github.com/nizoom/ignyte-aq-dashboard/blob/master/readme_assets/Screenshot%202025-12-15%20at%2010.39.38%E2%80%AFAM.png))
 ---
 
 ## What Makes This Different
