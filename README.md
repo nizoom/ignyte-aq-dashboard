@@ -3,7 +3,7 @@
 
 > **Visualizing urban air pollution in three dimensions**
 
- Air quality varies dramatically between street level and rooftops, yet most dashboards show flat 2D maps.
+ Air quality can vary dramatically between street level and rooftops, yet most dashboards show flat 2D maps.
 ---
 
 ## What Makes This Different
