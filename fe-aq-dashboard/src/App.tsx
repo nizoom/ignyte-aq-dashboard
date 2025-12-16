@@ -20,9 +20,9 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
 
           {/* 🔬 Researcher-only routes */}
-          <Route element={<RequireResearcher />}>
-            <Route path="/battery_diagnostics" element={<BatteryDiagPage />} />
-          </Route>
+          {/* <Route element={<RequireResearcher />}> */}
+          <Route path="/battery_diagnostics" element={<BatteryDiagPage />} />
+          {/* </Route> */}
         </Route>
       </Routes>
     </Router>

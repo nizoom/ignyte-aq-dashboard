@@ -17,8 +17,9 @@ import type { AirQualityResponse } from "../utils/types";
 import LineGraphs from "../components/ui/dashboard-ui/graphs/line-graph";
 import DatePicker from "../components/ui/dashboard-ui/datepicker";
 import "../app.css";
-import { filterDataForBatteryDiag } from "../utils/diag_utils";
+// import { filterDataForBatteryDiag } from "../utils/diag_utils";
 import type { BatteryData } from "../utils/types";
+import { useAuthStore } from "../store";
 
 type TimeRange = "Day" | "Week" | "Month" | "3 month";
 
@@ -45,38 +46,41 @@ const DashboardPage = () => {
   // battery data
   const [batteryData, setBatteryData] = useState<BatteryData | null>(null);
 
+  const user = useAuthStore((state) => state.user);
+  const isResearcher = user?.role === "researcher";
+
   useEffect(() => {
     async function load() {
-      if (!selectedDate) return; // Don't load if no date selected
+      if (!selectedDate) return;
 
-      // Format selectedDate to YYYY-MM-DD
-      const startDate = selectedDate.toISOString().split("T")[0];
-      let endDate = "";
+      // Calculate dates - look BACKWARD from selected date
+      const endDate = selectedDate.toISOString().split("T")[0];
+      let startDate = "";
 
-      // Calculate end date based on time range
-      const end = new Date(selectedDate);
+      const start = new Date(selectedDate);
       switch (timeRange) {
         case "Day":
-          end.setDate(end.getDate() + 1); // 1 day
+          start.setDate(start.getDate() - 1); // 1 day back
           break;
         case "Week":
-          end.setDate(end.getDate() + 7); // 7 days
+          start.setDate(start.getDate() - 7); // 7 days back
           break;
         case "Month":
-          end.setMonth(end.getMonth() + 1); // 1 month
+          start.setMonth(start.getMonth() - 1); // 1 month back
           break;
         case "3 month":
-          end.setMonth(end.getMonth() + 3); // 3 months
+          start.setMonth(start.getMonth() - 3); // 3 months back
           break;
       }
 
-      endDate = end.toISOString().split("T")[0];
+      startDate = start.toISOString().split("T")[0];
+
       console.log(sensorId);
       const data = await getSensorDataFromDB({
         sensor_id: sensorId,
         time_range: timeRange,
-        start_date: startDate,
-        end_date: endDate,
+        start_date: startDate, // Swapped order
+        end_date: endDate, // Swapped order
       });
 
       const batteryData = await getBatteryDataFromDb({
@@ -152,7 +156,7 @@ const DashboardPage = () => {
               endDate={new Date(2024, 10, 29)} // Nov 29, 2024 (or calculate +90 days)
             />
           </Box>
-          {datepickerStatus ? null : (
+          {datepickerStatus || !isResearcher ? null : (
             <>
               <Separator
                 orientation="vertical"

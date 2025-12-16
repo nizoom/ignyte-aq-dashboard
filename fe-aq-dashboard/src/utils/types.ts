@@ -18,7 +18,7 @@ export interface AirQualityDataset {
   sensor_id: string;
   start_date: string;
   end_date: string;
-  interval: "10min" | "hourly" | "daily";
+  interval: "hourly" | "6H" | "1D" | "3D";
   records: AirQaulityRecord[];
   count: number;
 }

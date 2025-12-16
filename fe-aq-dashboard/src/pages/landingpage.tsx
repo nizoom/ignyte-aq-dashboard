@@ -63,14 +63,14 @@ const LandingPage = () => {
         {" "}
         By IgNYte Lab
       </Text>
-      <Button
+      {/* <Button
         position="fixed"
         top={4}
         right={4}
         onClick={() => checkCurrentUser()}
       >
         Check User
-      </Button>
+      </Button> */}
     </Stack>
   );
 };

@@ -46,33 +46,15 @@ def get_file_names(folder_path: Path) -> List[str]:
     
     return file_names
 
-def determine_interval(time_range: str) -> tuple[str, str]:
+def determine_interval(time_range: str) -> tuple[str, str | None]:
     """Determine aggregation interval and pandas resample rule."""
     interval_map = {
-        "Day": ("hourly", "1H"),
+        "Day": ("hourly", "1H"),      # Changed from ("10min", None) to aggregate to hourly
         "Week": ("6H", "6H"),
-        "Month": ("daily", "1D"),
-        "3 month": ("weekly", "1W"),   
-        # 3 DAYS
-        # ADD MORE DATA PER AGG 
-        # ADD POINTS
-        # GAS POLLUTANT UNIT SHOULD BE DIFFERENT 
-        # NO2 AND 03 IN  PPB 
-        
-        # RESEARCHER VIEW HAS ACCESS TO ALL SENSORS AS POINTS 
-        # RESEARCHER VIEW HAS ACCESS TO EXPORT 
-
-        # ADD AQI FORMULA
-        # ADD SO2 AND CO DISCLAIMER
-
-        # LOGIN SCREEN
-        
-        # MAP - SENSOR POINT DEPTH 
-        
-        # DEC 15 PRESENTATIONS
-        # DEC 12, FRI REPORT DUE (README / DOCS)
+        "Month": ("1D", "1D"),
+        "3 month": ("3D", "3D"),   
     }
-    return interval_map.get(time_range, ("hourly", "1H"))
+    return interval_map.get(time_range, ("30min", "30T"))
 
 def retrieve_data_in_range(
     sensor_id: str, 
@@ -97,34 +79,33 @@ def retrieve_data_in_range(
     # Filter time range
     time_range_df = df[(df['timestamp'] >= start_dt) & (df['timestamp'] <= end_dt)]
     
-    #get_daily_AQI
+    # Get daily AQI
     aqi_stats = getAQI(time_range_df, start_dt)
 
     if time_range_df.empty:
         raise ValueError(f"No data found for sensor {sensor_id} in the specified range")
     
-    # AGGREGATE DATA if needed (not for "day" view)
-    if interval != "10min":
-        time_range_df = time_range_df.set_index('timestamp')
-        time_range_df = time_range_df.resample(resample_rule).agg({
-            'temp': 'mean',
-            'hum': 'mean',
-            'batt_soc': 'mean',
-            'batt_temp': 'mean',
-            'pm2.5': 'mean',
-            'pm10': 'mean',
-            'no2_we': 'mean',
-            'ox_we': 'mean',
-        }).reset_index()
-        
-        # Remove any NaN rows from aggregation
-        time_range_df = time_range_df.dropna()
+    # AGGREGATE DATA - now always aggregates (removed the None check)
+    time_range_df = time_range_df.set_index('timestamp')
+    time_range_df = time_range_df.resample(resample_rule).agg({
+        'temp': 'mean',
+        'hum': 'mean',
+        'batt_soc': 'mean',
+        'batt_temp': 'mean',
+        'pm2.5': 'mean',
+        'pm10': 'mean',
+        'no2_we': 'mean',
+        'ox_we': 'mean',
+    }).reset_index()
+    
+    # Only drop rows where air quality data is missing
+    time_range_df = time_range_df.dropna(subset=['pm2.5', 'pm10'])
     
     # Convert to records (rename pm2.5 to pm2_5 for Pydantic)
     time_range_df = time_range_df.rename(columns={'pm2.5': 'pm2_5'})
     records = [AirQualityRecord(**row) for row in time_range_df.to_dict('records')]
     
-    # Calculate statistics (use original column name until renamed)
+    # Calculate statistics
     stats = AirQualityStats(
         avg_pm2_5=float(time_range_df['pm2_5'].mean()),
         max_pm2_5=float(time_range_df['pm2_5'].max()),
@@ -139,7 +120,7 @@ def retrieve_data_in_range(
         sensor_id=sensor_id,
         start_date=start_dt,
         end_date=end_dt,
-        interval=interval,  # Tell frontend what aggregation was used
+        interval=interval,
         records=records
     )
     

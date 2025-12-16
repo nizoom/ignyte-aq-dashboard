@@ -1,316 +1,258 @@
-# Urban Air Quality API Documentation
+# Urban Air Quality Dashboard
 
-## Overview
+> **Visualizing urban air pollution in three dimensions** – because air quality varies dramatically between street level and rooftops, yet most dashboards show flat 2D maps.
 
-## Endpoints
+![3D Sensor Visualization](docs/images/3d-map-demo.gif)
+_Real vertical sensor positioning reveals pollution gradients invisible in standard AQI maps_
 
-### Sensors
+---
 
-#### `GET /sensor/test`
+## What Makes This Different
 
-Test endpoint to verify sensor routes are working.
+Traditional air quality dashboards show a **flat 2D map** with color-coded dots. This dashboard leverages **3D positioning** to visualize the actual vertical distribution of sensors across urban environments—street level vs. rooftop installations—revealing pollution gradients that standard interfaces completely miss.
 
-**Response**
+**Built for two audiences:**
 
-```json
-{
-  "status": "success",
-  "message": "Test route working"
-}
+- **Residents** – Quick health advisories and personal sensor data
+- **Researchers** – Full sensor network access, battery diagnostics, and data export capabilities
 
-    uvicorn main:app --reload
+---
+
+## Quick Start
+
+```bash
+# Clone and navigate
+git clone https://github.com/nizoom/ignyte-aq-dashboard.git
+cd ignyte-aq-dashboard
+
+# Backend setup (Python 3.11)
+conda create -n aq_dashboard_env python=3.11
+conda activate aq_dashboard_env
+cd be-aq-dashboard
+pip install fastapi uvicorn
+uvicorn main:app --reload
+
+# Frontend setup (separate terminal)
+cd ../fe-aq-dashboard
+npm install
+npm run dev
+```
+
+**Then:** Configure your `.env` file (see [Environment Variables](#environment-variables))
+
+**Access:**
+
+- Frontend: http://localhost:5173
+- API Docs: http://127.0.0.1:8000/docs
+
+---
+
+## System Architecture
+
+```
+┌──────────────────┐
+│  Street Sensors  │ ← Low altitude
+│  Rooftop Sensors │ ← High altitude
+└────────┬─────────┘
+         │ CSV Data
+         ▼
+┌─────────────────────────────────┐
+│   FastAPI Backend               │
+│   • Pydantic validation         │
+│   • Time-series queries         │
+│   • Battery diagnostics         │
+└────────┬────────────────────────┘
+         │ REST API
+         ▼
+┌─────────────────────────────────┐
+│   React + TypeScript Frontend   │
+│   • Mapbox 3D visualization     │
+│   • Threebox (3D markers)       │
+│   • Firebase auth               │
+└─────────────────────────────────┘
+```
+
+**Key Design Decisions:**
+
+- **Why 3D?** Vertical pollution gradients are scientifically significant but invisible in 2D
+- **Why FastAPI?** Pydantic types catch data schema issues early; auto-generated API docs
+- **Why Mapbox + Threebox?** Only combination supporting true 3D marker positioning by altitude
+
+---
+
+## Features
+
+### Implemented
+
+- **3D interactive map** with sensors positioned by actual altitude
+- **Time-series data retrieval** (day/week/month/3-month ranges)
+- **Battery diagnostics** tracking state-of-charge over time
+- **Firebase authentication** with user management
+- **Aggregated & individual sensor metadata** for network-wide and point-specific views
+- **Type-safe API** with Pydantic models preventing data inconsistencies
+- **Data export** – CSV/JSON download for researchers
+
+### In Progress
+
+- **AQI calculation refinement** – Converting raw voltage (mV) to ppb for EPA-standard AQI
+  - Location: `fe-aq-dashboard/src/utils/aqi.ts` and `/be-aq-dashboard/services/sensor_service.py`
+- **Data smoothing** – Implementing moving averages to show trends vs. noise spikes
+  - Location: `be-aq-dashboard/routers/sensor.py:45` and `/be-aq-dashboard/services/sensor_service.py`
+- **Sensor comparison UX** – Multi-sensor selection and side-by-side time-series
+
+### Known Gaps
+
+- **Production deployment** – Currently local-only
+- **Role-based access control** – Backend enforcement for researcher vs. resident views
+- **Live sensor ingestion** – Automated pipeline for real-time data updates
+- **Mobile responsive design** – Optimized for desktop only
+
+---
+
+## For the Next Developer
+
+- Graph overlays for multiple sensors
+- Pollutant exposure over time
+- Improve verticality visualization
+- Sort sensors by number of active sensors, worst and best AQ
+- Dominant pollutants in AQI. This is already part of the AQI response dictionary, it just needs to be visualized.
+- Further partitioning of UX based on stakeholder type
+
+### Code Hotspots
+
+Files you'll modify most:
+
+- `fe-aq-dashboard/src/components/map-componenents/map.tsx` – Map component initilization, building layer, stem layer, marker layer
+- `be-aq-dashboard/services/sensor_service.py` – Core logic for formatting and organizing data
+- `fe-aq-dashboard/src/utils/fetch_req.ts` – React data fetching layer
+- `fe-aq-dashboard/src/utils/types.ts` – TypeScript type definitions
+- `be-aq-dashboard/models/models.py` - Pydantic model definitions
+
+---
+
+## Project Structure
+
+```
+ignyte-aq-dashboard/
+├── fe-aq-dashboard/           # Vite + React + TypeScript
+│   ├── src/
+│   │   ├── components/        # React components (Map3D, Charts, etc.)
+│   │
+│   │   ├── types/             # TypeScript type definitions
+│   │   ├── utils/             # date formatting, API Calls
+│   │
+│   └── .env                   # Environment variables (CREATE THIS)
+│
+├── be-aq-dashboard/           # FastAPI Python backend
+│   ├── routers/
+│   │   ├── sensors.py         # Sensor data endpoints
+│   │   └── locations.py       # Location metadata endpoints
+│   ├── models/
+│   │   └── models.py          # Pydantic schemas
+│   ├── services/
+│   │   └── sensor_service.py  # Business logic (validation, CSV parsing)
+│   ├── data/
+│   │   ├── ind/               # Individual sensor CSVs
+│   │   └── agg/               # Aggregated neighborhood CSVs
+│   └── main.py                # FastAPI app entry point
+│
 ```
 
 ---
 
-#### `GET /sensor/{sensor_id}`
+## Environment Variables
 
-Retrieve air quality data for a specific sensor.
+Create `fe-aq-dashboard/.` with the following (this file is gitignored):
 
-**Path Parameters**
+```bash
+# Firebase Configuration
+VITE_FIREBASE_API_KEY=your_api_key_here
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
+VITE_FIREBASE_APP_ID=1:123456789:web:abcdef
 
-- `sensor_id` (string, required) - Unique identifier for the sensor (e.g., `ind_2.csv`)
-
-**Query Parameters**
-
-- `time_range` (string, optional) - Predefined time range for the query
-  - Options: `"day"`, `"week"`, `"month"`, `"3 month"`
-  - Default: `"day"`
-- `start_date` (datetime, optional) - Custom start date (overrides time_range if provided)
-- `end_date` (datetime, optional) - Custom end date (overrides time_range if provided)
-
-**Response Model**: `AirQualityResponse`
-
-**Example Request**
-
-```typescript
-GET http://localhost:8000/sensor/ind_2?time_range=day
+# Mapbox
+VITE_MAPBOX_API_KEY=pk.your_mapbox_token_here
 ```
 
-**Example Response**
+**How to get these:**
 
-```json
+- **Firebase:** [Firebase Console](https://console.firebase.google.com) → Project Settings → SDK setup
+- **Mapbox:** [Mapbox Console](https://account.mapbox.com/) → Tokens (create a new token)
+
+**Important:** All Vite env vars **must** start with `VITE_` to be accessible in the React app via `import.meta.env.VITE_VARIABLE_NAME`
+
+---
+
+## 📡 API Endpoints
+
+Full interactive docs: http://localhost:8000/docs
+
+### Core Endpoints
+
+| Endpoint                      | Method | Description                                          |
+| ----------------------------- | ------ | ---------------------------------------------------- |
+| `/sensor/{sensor_id}`         | GET    | Retrieve air quality time-series for a sensor        |
+| `/sensor/{sensor_id}/battery` | GET    | Battery diagnostics and charge history               |
+| `/locations/`                 | GET    | Spatial metadata for all sensors (for map rendering) |
+| `/sensor/test`                | GET    | Health check endpoint                                |
+
+**Example Request:**
+
+```bash
+curl "http://localhost:8000/sensor/ind_2?time_range=week"
+```
+
+**Response Schema:**
+
+```typescript
 {
-  "dataset": {
-    "sensor_id": "ind_2",
-    "start_date": "2024-01-01T00:00:00",
-    "end_date": "2024-01-01T23:59:59",
-    "interval": "10min",
-    "records": [
-      {
-        "timestamp": "2024-01-01T00:00:00",
-        "temp": 22.5,
-        "hum": 65.0,
-        "batt_soc": 85.0,
-        "batt_temp": 25.0,
-        "pm2_5": 12.5,
-        "pm10": 25.0,
-        "no2_we": 0.5,
-        "ox_we": 0.8
-      }
-    ],
-    "count": 1
-  },
-  "stats": {
-    "avg_pm2_5": 12.5,
-    "max_pm2_5": 15.0,
-    "min_pm2_5": 10.0,
-    "avg_temp": 22.5,
-    "avg_hum": 65.0,
-    "count": 1
+  dataset: {
+    sensor_id: string
+    start_date: datetime
+    end_date: datetime
+    interval: "10min" | "hourly" | "daily"
+    records: AirQualityRecord[]
+    count: number
+  }
+  stats?: {
+    avg_pm2_5: float
+    max_pm2_5: float
+    min_pm2_5: float
+    dominant_pollutant: string
   }
 }
 ```
 
----
-
-### Locations
-
-#### `GET /locations/`
-
-Get spatial information for all sensor locations.
+See [API Documentation](docs/API.md) for complete request/response schemas.
 
 ---
 
-## Data Models
+## Troubleshooting
 
-### AirQualityResponse
-
-Complete API response with dataset and optional statistics.
-
-**Fields**
-
-- `dataset` (AirQualityDataset, required) - The air quality dataset
-- `stats` (AirQualityStats, optional) - Pre-calculated summary statistics
-
----
-
-### AirQualityDataset
-
-A collection of air quality records along with dataset metadata.
-
-**Fields**
-
-- `sensor_id` (string, required) - Unique sensor identifier
-- `start_date` (datetime, required) - Start timestamp of the data range
-- `end_date` (datetime, required) - End timestamp of the data range
-- `interval` (string, required) - Aggregation interval
-  - Options: `"10min"`, `"hourly"`, `"daily"`
-- `records` (List[AirQualityRecord], required) - Array of air quality records
-- `count` (integer, computed) - Actual number of records in the dataset
+| Issue                                      | Solution                                                             |
+| ------------------------------------------ | -------------------------------------------------------------------- |
+| **"CORS error when fetching sensor data"** | Backend not running. Start with `uvicorn main:app --reload`          |
+| **"Map tiles not loading"**                | Check `VITE_MAPBOX_API_KEY` in `.env` file                           |
+| **"Firebase auth failing"**                | Verify all `VITE_FIREBASE_*` environment variables are set correctly |
+| **"Sensors not appearing on map"**         | Check browser console for `/locations` endpoint errors               |
+| **"Module not found" errors**              | Run `npm install` in `fe-aq-dashboard/`                              |
+| **Python import errors**                   | Activate conda env: `conda activate aq_dashboard_env`                |
 
 ---
 
-### AirQualityRecord
+## Tech Stack
 
-Represents a single snapshot of air quality and sensor readings.
-
-**Fields**
-
-- `timestamp` (datetime, required) - Time of the reading
-- `temp` (float, required) - Temperature in degrees Farenheight
-- `hum` (float, required) - Humidity in percentage
-- `batt_soc` (float, required) - Battery State of Charge (%)
-- `batt_temp` (float, required) - Battery temperature in degrees Farenheight
-- `pm2_5` (float, required) - Concentration of Particulate Matter 2.5 (µg/m³)
-- `pm10` (float, required) - Concentration of Particulate Matter 10 (µg/m³)
-- `no2_we` (float, required) - NO2 Working Electrode reading (mV)
-- `ox_we` (float, required) - Oxidizing Gas Working Electrode reading (mV)
-
----
-
-### AirQualityStats
-
-Summary statistics calculated over a dataset/time range.
-
-**Fields**
-
-- `avg_pm2_5` (float, required) - Average PM2.5 concentration
-- `max_pm2_5` (float, required) - Maximum PM2.5 concentration
-- `min_pm2_5` (float, required) - Minimum PM2.5 concentration
-- `avg_temp` (float, required) - Average temperature
-- `avg_hum` (float, required) - Average humidity
-- `count` (integer, required) - Number of records used for statistics
-
----
-
-### AirQualityQueryParams
-
-Defines the parameters for querying historical air quality data.
-
-**Fields**
-
-- `sensor_id` (string, required) - Sensor identifier
-- `time_range` (string, required) - Predefined time range
-  - Options: `"day"`, `"week"`, `"month"`, `"3 month"`
-- `start_date` (datetime, optional) - Custom start date
-- `end_date` (datetime, optional) - Custom end date
-
----
-
-### CSVMetaData
-
-Base metadata for CSV files.
-
-**Fields**
-
-- `sensor_id` (string, required) - Sensor identifier
-- `file_name` (string, required) - Name of the CSV file
-
----
-
-### IndMetaData
-
-Metadata for individual sensor dummy data CSV.
-
-**Extends**: CSVMetaData
-
-**Fields**
-
-- `address` (string, required) - Physical address of the sensor
-- `coords` (List[float], required) - GPS coordinates [lat, lon]
-- `name` (string, required) - Human-readable sensor name
-- `altitude` (integer, required) - Altitude in meters
-
----
-
-### AggMetaData
-
-Metadata for aggregated dummy data CSV.
-
-**Extends**: CSVMetaData
-
-**Fields**
-
-- `neighborhood_name` (string, required) - Name of the neighborhood
-- `neighborhood_bounds` (List[float], required) - Geographic bounds
-
----
-
-### GeneralSensorMetaData
-
-General, non-time-series information about a sensor.
-
-**Fields**
-
-- `onlineStatus` (boolean, required) - Whether the sensor is currently online
-- `location_name` (string, required) - Location name
-- `filename` (string, required) - Associated filename
-- `altitude` (float, required) - Altitude of the sensor in meters
-
----
-
-## Data Flow
-
-### Frontend → Backend Flow
-
-```
-┌─────────────────┐
-│   React App     │
-│  (TypeScript)   │
-└────────┬────────┘
-         │
-         │ 1. User selects sensor and time range
-         │
-         ▼
-┌─────────────────────────────────────────┐
-│  getSensorDataFromDB()                  │
-│  - Constructs AirQualityQueryParams     │
-│  - Makes axios GET request              │
-└────────┬────────────────────────────────┘
-         │
-         │ 2. HTTP GET /sensor/{sensor_id}?time_range=day
-         │
-         ▼
-┌─────────────────────────────────────────┐
-│  FastAPI Backend (main.py)              │
-│  - CORS middleware                      │
-│  - Routes to sensors router             │
-└────────┬────────────────────────────────┘
-         │
-         │ 3. Route: GET /sensor/{sensor_id}
-         │
-         ▼
-┌─────────────────────────────────────────┐
-│  sensors.router.get_sensor_data()       │
-│  - Validates sensor_id path param       │
-│  - Validates query params               │
-│  - Calls check_for_real_sensor()        │
-└────────┬────────────────────────────────┘
-         │
-         │ 4. Verify sensor exists
-         │
-         ▼
-┌─────────────────────────────────────────┐
-│  sensor_service.check_for_real_sensor() │
-│  - Checks data/ind/ folder              │
-│  - Checks data/agg/ folder              │
-│  - Returns True/False                   │
-└────────┬────────────────────────────────┘
-         │
-         │ 5. If valid, construct response
-         │
-         ▼
-┌─────────────────────────────────────────┐
-│  Build AirQualityResponse               │
-│  - Create AirQualityDataset             │
-│  - Create List[AirQualityRecord]        │
-│  - Calculate AirQualityStats            │
-│  - Validate against Pydantic models     │
-└────────┬────────────────────────────────┘
-         │
-         │ 6. JSON response
-         │
-         ▼
-┌─────────────────────────────────────────┐
-│  Frontend Receives Response             │
-│  - TypeScript types validate            │
-│  - Updates React state                  │
-│  - Renders visualization (visx charts)  │
-└─────────────────────────────────────────┘
-```
-
----
-
-## File Structure
-
-```
-project/
-├── main.py                    # FastAPI app entry point
-├── routers/
-│   ├── sensors.py            # Sensor-related endpoints
-│   └── locations.py          # Location endpoints
-├── models/
-│   └── models.py             # Pydantic models/schemas
-├── services/
-│   └── sensor_service.py     # Business logic (validation, data retrieval)
-├── data/
-│   ├── ind/                  # Individual sensor CSV files
-│   └── agg/                  # Aggregated sensor CSV files
-└── frontend/
-    └── src/
-        └── api/
-            └── sensors.ts    # API client functions
-```
+| Component              | Technology            | Why This Choice                                     | Key Files        |
+| ---------------------- | --------------------- | --------------------------------------------------- | ---------------- |
+| **Frontend Framework** | React 18 + TypeScript | Type safety for complex air quality data structures | `src/`           |
+| **Build Tool**         | Vite                  | Fast HMR, modern ES modules                         | `vite.config.ts` |
+| **UI Library**         | Chakra UI             | Accessible components, dark mode support            | `theme.ts`       |
+| **3D Mapping**         | Mapbox + Threebox     | Only combo supporting vertical 3D positioning       | `Map3D.tsx`      |
+| **Backend**            | FastAPI + Python 3.11 | Auto-generated docs, Pydantic validation            | `main.py`        |
+| **Authentication**     | Firebase Auth         | Quick OAuth setup, handles roles                    | `auth.ts`        |
+| **Database**           | Firestore             | NoSQL, real-time sync                               | `auth.ts   `     |
 
 ---

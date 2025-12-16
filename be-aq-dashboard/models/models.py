@@ -30,7 +30,7 @@ class AirQualityDataset(BaseModel):
     sensor_id: str
     start_date: datetime = Field(..., description="Start timestamp of the data range.")
     end_date: datetime = Field(..., description="End timestamp of the data range.")
-    interval: Literal["30min", "hourly", "3H", "6H", "daily", "weekly"] = Field(
+    interval: Literal["10min", "hourly", "6H", "1D", "3D"] = Field(
         ...,
         description="Aggregation interval of the data records."
     )
@@ -54,7 +54,8 @@ class AirQualityQueryParams(BaseModel):
     sensor_id: str
     
     # Predefined time range options
-    time_range: Literal["Day", "Week", "Month", "3 month"]
+    interval: Literal["hourly", "6H", "1D", "3D"]
+
     
     # Optional custom range dates (uses Optional or standard | None syntax)
     # The default value of None makes the field optional in FastAPI

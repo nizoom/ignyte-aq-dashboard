@@ -86,7 +86,8 @@ const AQIMeter: React.FC<AQIMeterProps> = ({
       value: 100,
       color: "#ff9933",
       meterMsg: [`AQI: ${currentValue}`, "Unhealthy for Sensitive Groups"],
-      healthAdvisory: "Unhealthy for sensitive groups",
+      healthAdvisory:
+        "Older adults, and children should limit prolonged or heavy outdoor exertion",
     },
     // Unhealthy for Sensitive Groups (AQI 101-150)
     {

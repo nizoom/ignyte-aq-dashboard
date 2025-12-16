@@ -49,7 +49,7 @@ const LineGraph = ({ width, height, data }: LineChartProps) => {
     nice: true,
   });
 
-  // Gas scales (converting mV to ppb for display)
+  // Gas scales
   const gasScale = scaleLinear({
     domain: [
       0,
@@ -61,6 +61,54 @@ const LineGraph = ({ width, height, data }: LineChartProps) => {
     range: [chartHeight, 0],
     nice: true,
   });
+
+  // Tick formatting based on interval
+  const getTickFormat = () => {
+    const interval = data.dataset.interval;
+
+    if (interval === "hourly") {
+      // Day: show hours (24 points)
+      return (value: any) => {
+        const date = value instanceof Date ? value : new Date(Number(value));
+        const hours = date.getHours();
+        const ampm = hours >= 12 ? "p" : "a";
+        const hour12 = hours % 12 || 12;
+        return `${hour12}${ampm}`;
+      };
+    } else if (interval === "6H") {
+      // Week: show date and time on single line
+      return (value: any) => {
+        const date = value instanceof Date ? value : new Date(Number(value));
+        const hours = date.getHours();
+        const ampm = hours >= 12 ? "p" : "a";
+        const hour12 = hours % 12 || 12;
+        const monthDay = `${date.getMonth() + 1}/${date.getDate()}`;
+        return `${monthDay} ${hour12}${ampm}`;
+      };
+    } else if (interval === "1D") {
+      // Month view: show month/day
+      return (value: any) => {
+        const date = value instanceof Date ? value : new Date(Number(value));
+        return `${date.getMonth() + 1}/${date.getDate()}`;
+      };
+    } else {
+      // 3D: 3 month view: show month/day
+      return (value: any) => {
+        const date = value instanceof Date ? value : new Date(Number(value));
+        return `${date.getMonth() + 1}/${date.getDate()}`;
+      };
+    }
+  };
+
+  const getNumTicks = () => {
+    const interval = data.dataset.interval;
+
+    if (interval === "hourly") return 12; // Every 2 hours
+    if (interval === "6H") return 14; // Twice per day
+    if (interval === "1D") return 10; // Every 3 days
+    if (interval === "3D") return 10; // Every 9 days
+    return 10;
+  };
 
   const Chart = ({
     title,
@@ -124,13 +172,16 @@ const LineGraph = ({ width, height, data }: LineChartProps) => {
           <AxisBottom
             top={chartHeight}
             scale={xScale}
-            numTicks={6}
+            numTicks={getNumTicks()}
+            tickFormat={getTickFormat()}
             stroke="#999"
             tickStroke="#999"
             tickLabelProps={() => ({
               fill: "#666",
               fontSize: 11,
-              textAnchor: "middle",
+              textAnchor: data.dataset.interval === "6H" ? "end" : "middle",
+              angle: data.dataset.interval === "6H" ? -45 : 0,
+              dy: data.dataset.interval === "6H" ? 4 : 0,
             })}
           />
 
@@ -176,7 +227,6 @@ const LineGraph = ({ width, height, data }: LineChartProps) => {
   return (
     <Flex flexDirection="column" p={4}>
       {/* Particulate Matter Chart */}
-
       <Chart
         title="Particulate Matter"
         yLabel="Concentration (µg/m³)"
@@ -200,7 +250,7 @@ const LineGraph = ({ width, height, data }: LineChartProps) => {
       {/* Gas Pollutants Chart */}
       <Chart
         title="Gas Pollutants"
-        yLabel="Concentration (mV)"
+        yLabel="Concentration (ppb)*"
         yScale={gasScale}
         lines={[
           {
