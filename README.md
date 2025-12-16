@@ -9,7 +9,7 @@ _Real vertical sensor positioning reveals pollution gradients invisible in stand
 
 ## What Makes This Different
 
-Traditional air quality dashboards show a **flat 2D map** with color-coded dots. This dashboard leverages **3D positioning** to visualize the actual vertical distribution of sensors across urban environments—street level vs. rooftop installations—revealing pollution gradients that standard interfaces completely miss.
+Traditional air quality dashboards show a **flat 2D map** with color-coded dots. This dashboard leverages **3D positioning** to visualize the actual vertical distribution of sensors across urban environments (street level vs. rooftop installations) revealing pollution gradients that standard interfaces completely miss.
 
 **Built for two audiences:**
 
@@ -186,7 +186,7 @@ VITE_MAPBOX_API_KEY=pk.your_mapbox_token_here
 
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
 Full interactive docs: http://localhost:8000/docs
 
